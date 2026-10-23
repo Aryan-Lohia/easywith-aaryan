@@ -41,8 +41,7 @@ const P = k => {
   return programs[k];
 };
 const payHref = k => {
-  const p = P(k);
-  if (p.payLink) return p.payLink;
+  P(k);
   return `${pagePath("apply")}?program=${k}`;
 };
 const bookHref = k => {
@@ -605,7 +604,6 @@ ${Object.values(pages).filter(p => p.path.endsWith("/") && p.path !== "/").map(p
 function checks() {
   if (!/^https:\/\//.test(siteUrl)) warn("site.url should start with https://");
   for (const [k, p] of Object.entries(programs)) {
-    if (!p.payLink) warn(`programs.${k}.payLink is empty → pay buttons open the application form instead of Razorpay`);
     if (!p.bookingLink) warn(`programs.${k}.bookingLink is empty → booking buttons open WhatsApp`);
   }
   if (!contact.instagram) warn("contact.instagram is empty → Instagram button/link hidden");

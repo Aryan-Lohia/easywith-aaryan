@@ -171,6 +171,28 @@
     });
   });
 
+  // ---------- Application form: pre-select the program, show project questions for the Intensive ----------
+  const apply = document.querySelector("[data-apply]");
+  if (apply) {
+    const extras = [...apply.querySelectorAll("[data-show-for]")];
+    const goalLabel = apply.querySelector("[data-goal-label]");
+    const sync = () => {
+      const chosen = (apply.querySelector("input[name=program]:checked") || {}).value;
+      extras.forEach(box => {
+        const on = box.dataset.showFor === chosen;
+        box.hidden = !on;
+        // Hidden questions must not block submission or be sent.
+        box.querySelectorAll("input, select, textarea").forEach(el => { el.disabled = !on; });
+      });
+      if (goalLabel) goalLabel.textContent = chosen === "implementation" ? "What do you want to build?" : "What do you want to achieve with AI?";
+    };
+    const wanted = new URLSearchParams(location.search).get("program");
+    const radio = wanted && apply.querySelector(`input[name=program][value="${CSS.escape(wanted)}"]`);
+    if (radio) radio.checked = true;
+    apply.addEventListener("change", e => { if (e.target.name === "program") sync(); });
+    sync();
+  }
+
   // ---------- "Find my program" quiz ----------
   const quiz = document.querySelector("[data-quiz]");
   if (quiz) {
@@ -235,8 +257,8 @@
     if (hidden) hidden.value = p.name;
     ty.querySelectorAll("[data-only]").forEach(el => { el.hidden = el.dataset.only !== key; });
 
-    // Count a purchase only when Razorpay hands back a payment id, and only once.
-    const paymentId = q.get("razorpay_payment_id") || q.get("payment_id");
+    // Count a purchase only when the link carries a payment reference (?payment_id=…), and only once.
+    const paymentId = q.get("payment_id");
     const seen = store.get("ewa_purchases") || [];
     if (paymentId && !seen.includes(paymentId)) {
       track("purchase", { ...programParams(key), transaction_id: paymentId });

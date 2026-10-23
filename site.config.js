@@ -54,7 +54,7 @@ module.exports = {
     phone: "+91 78649 55155",
     email: "aryan@theaihive.org",
     // Full profile URLs. Leave "" to hide a button/link everywhere.
-    instagram: "",                        // e.g. "https://www.instagram.com/yourhandle"
+    instagram: "https://www.instagram.com/easywithaaryan",                        // e.g. "https://www.instagram.com/yourhandle"
     linkedin: "https://www.linkedin.com/in/Aryan-Lohia",
     youtube: "",
     defaultWhatsAppMessage: "Hi Aryan, I'd like to know more about your AI programs.",
@@ -116,9 +116,6 @@ module.exports = {
       launchPrice: 1499,                  // null = launch offer off
       sessions: 1,
       minutesPerSession: 90,
-      // Razorpay Payment Page. Set its success redirect to:
-      //   {site.url}/thank-you/?program=clarity
-      payLink: "",
       bookingLink: "",                    // Calendly / Cal.com 90-min event
       description: "One personalised 90-minute 1:1 session to understand which AI tools fit your goal and leave with a workflow you can use immediately.",
     },
@@ -130,7 +127,6 @@ module.exports = {
       launchPrice: 5999,
       sessions: 4,
       minutesPerSession: 90,
-      payLink: "",                        // redirect → /thank-you/?program=growth
       bookingLink: "",
       description: "A personalised four-week 1:1 AI program: foundations, real-work workflows, automation and a completed capstone project.",
     },
@@ -143,7 +139,6 @@ module.exports = {
       priceIsFrom: true,
       sessions: 4,
       minutesPerSession: 90,
-      payLink: "",                        // sent manually after the scoping call
       bookingLink: "",                    // discovery-call booking link
       description: "Four guided 1:1 build sessions to design, build, test and document one AI-powered workflow or prototype.",
     },
@@ -224,7 +219,7 @@ module.exports = {
       schema: ["course:implementation"],
       breadcrumb: "AI Implementation Intensive",
       priority: 0.8,
-      cta: { label: "Apply", page: "apply" },
+      cta: { label: "Apply", page: "apply", hash: "?program=implementation" },
     },
     apply: {
       src: "apply.html", path: "/apply/",

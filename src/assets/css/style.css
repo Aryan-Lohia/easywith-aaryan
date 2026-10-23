@@ -359,3 +359,154 @@ details ul { padding-left: 20px; }
   body.sticky-on .fab { bottom: 88px; }
 }
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } * { transition: none !important; } }
+
+/* ---------- Application form ---------- */
+.apply-page { padding: 56px 0 96px; }
+.page-title { font-size: clamp(34px, 5vw, 54px); }
+.form-card { padding: 36px; }
+.legend { font: 500 14px/1.3 var(--f-label); margin-bottom: 10px; }
+fieldset.field { border: 0; min-width: 0; }
+.program-pick { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.pick { position: relative; margin: 0 !important; cursor: pointer; }
+.pick input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+.pick-body { display: block; height: 100%; padding: 16px 18px; border: 1.5px solid var(--line); border-radius: 14px; background: var(--ivory); transition: border-color .15s, background .15s; }
+.pick-body b { display: block; font: 600 16px/1.3 var(--f-head); }
+.pick-body small { display: block; color: var(--muted); font-size: 14px; margin-top: 4px; }
+.pick-tag { display: inline-block; margin-top: 8px; font: 600 11px/1 var(--f-label); font-style: normal; letter-spacing: .08em; text-transform: uppercase; background: var(--orange-soft); color: var(--orange-deep); padding: 5px 8px; border-radius: 6px; }
+.pick:hover .pick-body { border-color: var(--stone); }
+.pick input:checked + .pick-body { border-color: var(--charcoal); background: var(--surface); box-shadow: inset 0 0 0 1px var(--charcoal); }
+.pick input:focus-visible + .pick-body { outline: 2.5px solid var(--orange); outline-offset: 2px; }
+.form-extra { display: grid; gap: 18px; padding: 22px; border-radius: 16px; background: var(--sand); }
+.extra-title { font: 600 15px/1.3 var(--f-head); }
+.success-title { font-size: clamp(28px, 4vw, 36px); }
+.trust { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; text-align: center; }
+.trust div { padding: 16px 10px; border-top: 2px solid var(--charcoal); }
+.trust b { display: block; font: 600 15px var(--f-head); }
+.trust span { font-size: 14px; color: var(--muted); }
+.form-success { text-align: center; }
+
+/* ---------- Fixes ---------- */
+.rating input { width: 1px !important; height: 1px; padding: 0; border: 0; }
+.ticks a, .ty-step a:not(.btn), .faq a, .cta-note a { display: inline-block; padding: 6px 0; margin: -6px 0; }
+@media (max-width: 767px) {
+  /* Bigger tap areas for text links without changing line height */
+  main p a:not(.btn), main li a:not(.btn), .trust a, .cta-note a { display: inline; padding: 12px 0; margin: 0; }
+}
+.btn { min-height: 48px; text-align: center; line-height: 1.2; }
+.btn-sm { min-height: 42px; }
+.field input, .field select, .field textarea { min-height: 50px; font-size: 16px; } /* 16px stops iOS zoom on focus */
+.field select { appearance: none; background-image: linear-gradient(45deg, transparent 50%, var(--muted) 50%), linear-gradient(135deg, var(--muted) 50%, transparent 50%); background-position: calc(100% - 22px) 50%, calc(100% - 16px) 50%; background-size: 6px 6px; background-repeat: no-repeat; padding-right: 40px; }
+.compare-wrap { -webkit-overflow-scrolling: touch; }
+img { height: auto; }
+.hero-art img { height: 96%; }
+h1, h2, h3 { overflow-wrap: break-word; hyphens: manual; }
+
+/* ---------- Tablet ---------- */
+@media (max-width: 960px) {
+  .hero-art { aspect-ratio: auto; height: min(560px, 120vw); }
+  .about > img { max-width: 520px; margin: 0 auto; }
+  .program { padding: 30px 26px; }
+  .footer { padding-bottom: 130px; }
+}
+
+/* ---------- Phones ---------- */
+@media (max-width: 640px) {
+  h2 { font-size: clamp(28px, 8vw, 36px); }
+  .lead { font-size: 17px; }
+  .label { font-size: 12px; letter-spacing: .1em; line-height: 1.4; }
+  .hero h1 { font-size: clamp(36px, 10.5vw, 46px); }
+  .hero-art { height: min(460px, 118vw); border-radius: 22px; }
+  .hero-art .caption { left: 12px; right: 12px; bottom: 12px; padding: 12px 14px; }
+  .pills { gap: 8px; }
+  .pill { font-size: 13px; padding: 9px 13px; }
+  .card { padding: 24px 20px; }
+  .pain { padding: 22px 20px 22px 52px; }
+  .pain::before { left: 18px; }
+  .programs { margin-top: 36px; }
+  .program.featured { margin-top: 8px; }
+  .price .now { font-size: 36px; }
+  .offer .price .now { font-size: 48px; }
+  .offer .stack li { font-size: 15px; }
+  .compare { font-size: 14px; }
+  .compare th, .compare td { padding: 12px 14px; }
+  .timeline { margin-top: 32px; }
+  .slot { padding: 22px 0; }
+  .steps { gap: 24px; }
+  .about { gap: 32px; }
+  .stats { grid-template-columns: repeat(3, 1fr); }
+  .stat span { font-size: 12.5px; line-height: 1.35; display: block; }
+  .feat[style*="columns"] { columns: 1 !important; }
+  .quiz h3 { font-size: 21px; }
+  .option { padding: 15px 16px; }
+  .faq summary { font-size: 16.5px; }
+  details { padding: 18px 0; }
+  .form-card { padding: 24px 18px; }
+  .program-pick { grid-template-columns: 1fr; }
+  .form-extra { padding: 18px 14px; }
+  .apply-page { padding: 36px 0 72px; }
+  .trust { grid-template-columns: 1fr; gap: 0; text-align: left; }
+  .trust div { display: flex; justify-content: space-between; gap: 12px; padding: 14px 0; border-top: 1px solid var(--line); }
+  .ty-step .btn { width: 100%; }
+  .guarantee, .promise > div { padding: 24px 20px; }
+  .footer-grid { gap: 28px; }
+  .footer-base { flex-direction: column; }
+  .sticky-cta { padding: 10px 12px calc(10px + env(safe-area-inset-bottom)); }
+  .sticky-cta .p b { font-size: 18px; }
+  .sticky-cta .btn { padding: 12px 18px; min-height: 46px; }
+  .cta-row { flex-direction: column; align-items: stretch; }
+  .prose h2 { font-size: 22px; margin-top: 36px; }
+}
+
+/* ---------- Very small phones ---------- */
+@media (max-width: 360px) {
+  .wrap { padding: 0 14px; }
+  .brand-name { letter-spacing: .24em; }
+  .hero h1 { font-size: 34px; }
+  .stats { grid-template-columns: 1fr 1fr; }
+  .sticky-cta .p { font-size: 12px; }
+}
+
+/* ---------- Large screens ---------- */
+@media (min-width: 1600px) {
+  :root { --max: 1240px; }
+  body { font-size: 18px; }
+}
+
+/* ---------- Mobile polish ---------- */
+.rating { display: grid; grid-template-columns: repeat(5, minmax(0, 56px)); gap: 8px; }
+.rating span { width: auto; }
+.proof-names { font: 500 16px/2 var(--f-label); color: var(--muted); display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 34px; }
+@media (max-width: 640px) {
+  .compare-wrap { display: none; }  /* the program cards above carry the same details on phones */
+  .proof-names { font-size: 14px; line-height: 1.7; gap: 6px 18px; }
+}
+
+/* ---------- Logo strip ---------- */
+.proof { padding: 40px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.proof-title { font: 500 13px/1.4 var(--f-label); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); text-align: center; margin-bottom: 28px; }
+.logo-strip { list-style: none; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 24px 46px; }
+.logo-strip li { display: flex; align-items: center; justify-content: center; min-height: 60px; }
+.logo-strip img { width: auto; max-width: 100%; height: 40px; transition: transform .2s; }
+.logo-strip img.logo-wide { height: 30px; }
+.logo-strip img.logo-gdsc { height: 40px; }
+.logo-strip img.logo-mid { height: 48px; }
+.logo-strip img.logo-tall { height: 54px; }
+.logo-strip img.logo-xtall { height: 60px; }
+.logo-strip img.logo-emblem { height: 70px; }
+.logo-strip li:hover img { transform: scale(1.05); }
+.logo-text { font: 600 12.5px/1.3 var(--f-label); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); text-align: center; }
+@media (max-width: 1100px) {
+  .logo-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 26px 20px; }
+}
+@media (max-width: 640px) {
+  .proof { padding: 32px 0; }
+  .logo-strip { grid-template-columns: repeat(2, 1fr); gap: 20px 14px; }
+  .logo-strip li { min-height: 56px; }
+  .logo-strip img { height: 34px; }
+  .logo-strip img.logo-wide { height: 26px; }
+  .logo-strip img.logo-gdsc { height: 30px; }
+  .logo-strip img.logo-mid { height: 42px; }
+  .logo-strip img.logo-tall { height: 48px; }
+  .logo-strip img.logo-xtall { height: 54px; }
+  .logo-strip img.logo-emblem { height: 64px; }
+}

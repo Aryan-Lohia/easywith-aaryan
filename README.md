@@ -36,12 +36,7 @@ Then in the repo: **Settings → Pages → Custom domain** → `courses.aryanloh
 ## Go-live checklist
 
 1. **Domain:** set `site.url`.
-2. **Razorpay:** create one Payment Page per program, paste each link into `programs.<name>.payLink`, and set the success redirect to:
-   - `https://YOUR-DOMAIN/thank-you/?program=clarity`
-   - `https://YOUR-DOMAIN/thank-you/?program=growth`
-   - `https://YOUR-DOMAIN/thank-you/?program=implementation`
-
-   Razorpay's website check needs the Terms, Refund, Delivery, Privacy and Contact pages. They're all built in.
+2. **Payments:** there's no payment gateway. Every Book / Enrol / Apply button opens the application form (`/apply/?program=…`). You confirm the slot on WhatsApp and share UPI or bank details. Once paid, send the learner `https://YOUR-DOMAIN/thank-you/?program=growth&payment_id=<UPI ref>`, which handles booking and the needs assessment and records the purchase in analytics.
 3. **Booking:** paste Calendly / Cal.com links into `programs.<name>.bookingLink`.
 4. **Instagram:** set `contact.instagram` (the floating button appears automatically).
 5. **Forms:** set `forms.webhookUrl` and `forms.webhookSecret` (see below).
@@ -51,7 +46,7 @@ Then in the repo: **Settings → Pages → Custom domain** → `courses.aryanloh
 
 ## Forms → webhook
 
-All forms (contact, application, needs assessment, feedback) post to `/api/submit.php`, which:
+All forms (application, contact, needs assessment, feedback) post to `/api/submit.php`, which:
 - blocks other websites, bots (hidden honeypot field + too-fast submissions) and floods (8 per IP per 10 min)
 - strips HTML and forwards clean JSON to `forms.webhookUrl`
 - falls back to a pre-filled WhatsApp message if delivery fails
@@ -60,17 +55,17 @@ Payload:
 ```json
 {
   "event": "form_submission",
-  "form": "implementation-application",
+  "form": "application",
   "submittedAt": "2026-10-23T09:30:00+00:00",
   "site": "https://www.easywithaaryan.com",
   "page": "/apply/",
-  "data": { "name": "…", "phone": "…", "idea": "…" },
+  "data": { "program": "growth", "name": "…", "phone": "…", "goal": "…" },
   "attribution": { "utm_source": "instagram", "utm_campaign": "…", "landing_page": "/", "referrer": "…" },
   "meta": { "ip": "…", "userAgent": "…" }
 }
 ```
 
-Form names: `contact`, `implementation-application`, `needs-assessment`, `testimonial`.
+Form names: `application` (all programs; `data.program` says which), `contact`, `needs-assessment`, `testimonial`.
 
 Headers sent with every request:
 - `X-Webhook-Event: form.<form-name>`
@@ -93,11 +88,11 @@ Sent to GTM `dataLayer`, GA4 / Google Ads and Meta Pixel when configured:
 | Event | When | Meta Pixel |
 |---|---|---|
 | `view_item` | Program page viewed | ViewContent |
-| `begin_checkout` | Pay button clicked | InitiateCheckout |
+| `begin_checkout` | Book / Enrol / Apply button clicked | InitiateCheckout |
 | `generate_lead` | Any form submitted (+ Google Ads lead conversion) | Lead |
 | `contact` | WhatsApp / Instagram clicked | Contact |
 | `quiz_complete` | "Find my program" quiz finished | custom |
-| `purchase` | Thank-you page loaded with a Razorpay payment ID (once per payment; + Ads purchase conversion) | Purchase |
+| `purchase` | Thank-you page opened with `?payment_id=…` (once per payment; + Ads purchase conversion) | Purchase |
 
 ## SEO built in
 
