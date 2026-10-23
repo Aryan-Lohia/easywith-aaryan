@@ -1,0 +1,77 @@
+<section style="padding-top:64px" data-thankyou>
+  <div class="wrap narrow">
+    <span class="label">Payment received</span>
+    <h1 style="font-size:clamp(36px,5vw,56px)">You're in. Welcome to the <span class="accent" data-program-name>AI Clarity Session</span>.</h1>
+    <p class="lead mt-s">Two quick steps and we're ready. A payment receipt is on its way to your email.</p>
+
+    <div class="ty-steps">
+      <div class="ty-step done">
+        <div class="n">✓</div>
+        <div><h3>Payment confirmed</h3><p>Your seat for the <span data-program-name></span> is reserved.</p></div>
+      </div>
+
+      <div class="ty-step">
+        <div class="n">2</div>
+        <div>
+          <h3>Book your session</h3>
+          <p data-only="clarity">Pick a 90-minute slot that suits you.</p>
+          <p data-only="growth" hidden>Book your first session now. We'll fix the remaining three weekly slots together in session one. The program should be completed within six weeks.</p>
+          <p data-only="implementation" hidden>Book your Session 1 (problem definition &amp; architecture) based on the scope we agreed.</p>
+          <a href="#" class="btn btn-orange" data-ty-book target="_blank" rel="noopener">Choose my slot <span class="arrow">→</span></a>
+        </div>
+      </div>
+
+      <div class="ty-step">
+        <div class="n">3</div>
+        <div>
+          <h3>Tell me about your goal</h3>
+          <p>This short needs assessment lets me prepare a session around you instead of a generic plan. It takes about 3 minutes.</p>
+
+          <form class="form" data-form="needs-assessment" data-success="ty-ok">
+            <input type="hidden" name="program" value="">
+            <div class="form-row">
+              <div class="field"><label for="n">Name</label><input id="n" name="name" required autocomplete="name"></div>
+              <div class="field"><label for="p">WhatsApp number</label><input id="p" name="phone" type="tel" required autocomplete="tel" placeholder="+91"></div>
+            </div>
+            <div class="field">
+              <label for="w">What do you do?</label>
+              <select id="w" name="role" required>
+                <option value="">Select…</option>
+                <option>Student</option>
+                <option>Working professional / manager</option>
+                <option>Founder / business owner</option>
+                <option>Developer / technical learner</option>
+                <option>Other</option>
+              </select>
+            </div>
+            <div class="field"><label for="g">What's the main goal you want AI to help with?</label><textarea id="g" name="goal" required placeholder="Be as specific as you can, e.g. 'summarise 20 client reports a week' or 'plan my final-year project'."></textarea></div>
+            <div class="field"><label for="t">Which AI tools have you used so far? <span class="opt">(optional)</span></label><input id="t" name="tools" placeholder="ChatGPT, Gemini, none yet…"></div>
+            <div class="field"><label for="o">What's your biggest obstacle with AI right now?</label><textarea id="o" name="obstacle" style="min-height:90px" required></textarea></div>
+            <button type="submit" class="btn btn-block">Send my answers</button>
+          </form>
+
+          <div id="ty-ok" class="form-success">
+            <h3>Got it, thank you!</h3>
+            <p>I'll use this to prepare your session. See you soon.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="ty-step">
+        <div class="n">4</div>
+        <div>
+          <h3>Before we meet</h3>
+          <ul class="ticks mt-s">
+            <li>A laptop with a stable internet connection</li>
+            <li>A free ChatGPT (or similar) account, logged in</li>
+            <li>One real task or document you'd like help with</li>
+            <li>Need to reschedule? Message at least {{cfg:policies.rescheduleNoticeHours}} hours before (one reschedule per session)</li>
+            <li>Payments are non-refundable unless I fail to deliver a session. <a href="refund-policy.html">Refund policy</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <p class="center mt-l muted">Questions? <a href="#" data-wa="Hi Aryan, I just enrolled and have a question.">Message me on WhatsApp</a></p>
+  </div>
+</section>

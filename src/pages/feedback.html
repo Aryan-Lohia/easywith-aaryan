@@ -1,0 +1,45 @@
+<!-- Send this page to learners after their program to collect real testimonials (with permission). -->
+<section style="padding-top:64px">
+  <div class="wrap narrow">
+    <span class="label">Your feedback</span>
+    <h1 style="font-size:clamp(36px,5vw,54px)">How did it <span class="accent">go?</span></h1>
+    <p class="lead mt-s">Two minutes of honest feedback helps me improve, and helps the next person decide whether this is right for them.</p>
+
+    <form class="form card mt-l" data-form="testimonial" data-success="fb-ok" style="padding:36px">
+      <div class="form-row">
+        <div class="field"><label for="f-name">Full name</label><input id="f-name" name="name" required autocomplete="name"></div>
+        <div class="field"><label for="f-role">Role &amp; city</label><input id="f-role" name="role" required placeholder="e.g. Marketing Manager, Kolkata"></div>
+      </div>
+      <div class="field">
+        <label for="f-program">Which program did you take?</label>
+        <select id="f-program" name="program" required>
+          <option value="">Select…</option>
+          <option value="clarity">AI Clarity Session</option>
+          <option value="growth">AI Growth Plan</option>
+          <option value="implementation">AI Implementation Intensive</option>
+          <option value="workshop">A workshop</option>
+        </select>
+      </div>
+      <fieldset class="field" style="border:0">
+        <legend style="font:500 14px/1.3 var(--f-label);margin-bottom:8px">How likely are you to recommend it to a friend? (1–5)</legend>
+        <div class="rating">
+          <label><input type="radio" name="rating" value="1" required><span>1</span></label>
+          <label><input type="radio" name="rating" value="2"><span>2</span></label>
+          <label><input type="radio" name="rating" value="3"><span>3</span></label>
+          <label><input type="radio" name="rating" value="4"><span>4</span></label>
+          <label><input type="radio" name="rating" value="5"><span>5</span></label>
+        </div>
+      </fieldset>
+      <div class="field"><label for="f-result">What did you learn or build?</label><input id="f-result" name="result" required placeholder="e.g. Built a weekly reporting assistant"></div>
+      <div class="field"><label for="f-quote">In your own words, what was the experience like?</label><textarea id="f-quote" name="quote" required></textarea></div>
+      <div class="field"><label for="f-improve">What could be better? <span class="opt">(optional, private)</span></label><textarea id="f-improve" name="improve" style="min-height:90px"></textarea></div>
+      <label class="check"><input type="checkbox" name="publish_consent" value="yes"> You can publish my name, role and the quote above on the website and social media.</label>
+      <button type="submit" class="btn btn-orange btn-block">Send feedback</button>
+    </form>
+
+    <div id="fb-ok" class="form-success card mt-l" style="padding:48px 32px">
+      <h2 style="font-size:34px">Thank you!</h2>
+      <p class="lead">I really appreciate you taking the time.</p>
+    </div>
+  </div>
+</section>

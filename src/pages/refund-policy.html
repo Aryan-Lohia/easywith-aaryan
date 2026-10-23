@@ -1,0 +1,50 @@
+<section style="padding-top:56px">
+  <div class="wrap narrow prose">
+    <nav class="crumbs" aria-label="Breadcrumb"><a href="index.html">Home</a> / Cancellation &amp; Refund Policy</nav>
+    <span class="label">Policies</span>
+    <h1 style="font-size:clamp(34px,5vw,52px)">Cancellation &amp; Refund Policy</h1>
+    <p class="updated mt-s">Last updated: {{cfg:policies.lastUpdated}}</p>
+
+    <div class="card sand mt-m">
+      <h3>In short</h3>
+      <p style="color:var(--ink)">All payments are final and <b>non-refundable</b>, with one exception: <b>if I fail to deliver a session you have paid for, you get a refund for that session.</b></p>
+    </div>
+
+    <p class="mt-m">This policy applies to all programs offered by {{cfg:person.name}} under the name {{cfg:site.name}}: the AI Clarity Session, the AI Growth Plan and the AI Implementation Intensive.</p>
+
+    <h2 id="no-refunds">1. Payments are non-refundable</h2>
+    <p>Each program reserves dedicated one-to-one time that can't be offered to anyone else. For this reason, payments are not refunded for a change of mind, a change in schedule or availability, missed sessions, or dissatisfaction with outcomes.</p>
+
+    <h2 id="exception">2. The exception: sessions I fail to deliver</h2>
+    <p>You're entitled to a refund for any paid session that I fail to deliver. A session counts as <b>not delivered</b> when:</p>
+    <ul>
+      <li>I cancel or don't attend a scheduled session, <b>and</b> I can't offer you a replacement slot within {{cfg:policies.refundRescheduleWindowDays}} days, or you reasonably decline the replacement offered; or</li>
+      <li>A technical problem on my side prevents the session from taking place and it isn't made up within {{cfg:policies.refundRescheduleWindowDays}} days.</li>
+    </ul>
+
+    <h2 id="amount">3. How much is refunded</h2>
+    <ul>
+      <li><b>AI Clarity Session:</b> the full amount paid.</li>
+      <li><b>AI Growth Plan:</b> the amount paid divided by four, for each undelivered session.</li>
+      <li><b>AI Implementation Intensive:</b> the amount paid divided by four, for each undelivered session, unless your written scope says otherwise.</li>
+    </ul>
+    <p>Third-party costs you've paid directly (software subscriptions, API usage, hosting) are not covered, because they're paid to those providers.</p>
+
+    <h2 id="not-eligible">4. What isn't eligible for a refund</h2>
+    <ul>
+      <li>Sessions you miss or cancel with less than {{cfg:policies.rescheduleNoticeHours}} hours' notice. These count as delivered.</li>
+      <li>Growth Plan sessions not booked within the {{cfg:policies.growthValidityWeeks}}-week validity period, unless an extension was agreed.</li>
+      <li>Results such as income, employment, grades or business growth. Training covers the agreed process and deliverables, not outcomes.</li>
+      <li>A change of mind after payment.</li>
+    </ul>
+
+    <h2 id="rescheduling">5. Rescheduling</h2>
+    <p>You can reschedule each session {{cfg:policies.reschedulesPerSession}} time with at least {{cfg:policies.rescheduleNoticeHours}} hours' notice by WhatsApp or email. If I need to reschedule, I'll tell you as early as possible and offer new slots.</p>
+
+    <h2 id="process">6. How to request a refund</h2>
+    <p>Message me on <a href="#" data-wa="Hi Aryan, I'd like to request a refund for an undelivered session.">WhatsApp</a> or email <a href="#" data-email></a> with your name, program and payment ID. Eligible refunds are processed within {{cfg:policies.refundProcessingDays}} working days to your original payment method via Razorpay. Your bank may take a further 5–7 working days to show the credit.</p>
+
+    <h2 id="contact">7. Questions</h2>
+    <p>{{cfg:person.name}} · {{cfg:person.city}}, {{cfg:person.region}}, India · <a href="#" data-email></a> · {{phone}}</p>
+  </div>
+</section>

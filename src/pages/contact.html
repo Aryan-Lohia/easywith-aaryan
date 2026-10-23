@@ -1,0 +1,54 @@
+<section class="hero" style="padding-bottom:40px">
+  <div class="wrap">
+    <nav class="crumbs" aria-label="Breadcrumb"><a href="index.html">Home</a> / Contact</nav>
+    <span class="label">Contact</span>
+    <h1 style="font-size:clamp(38px,5.5vw,62px)">Let's talk about <span class="accent">your</span> AI goals.</h1>
+    <p class="lead mt-s">Questions about a program, a workshop for your college or company, or an AI project? Message me directly. I usually reply within one working day.</p>
+  </div>
+</section>
+
+<section class="tight">
+  <div class="wrap">
+    <div class="grid-3">
+      <a class="card" href="#" data-wa data-contact="whatsapp" style="text-decoration:none">
+        <span class="num">Fastest</span><h2 style="font-size:22px;margin:0">WhatsApp</h2><p>{{phone}}</p>
+      </a>
+      <a class="card" href="mailto:{{email}}" style="text-decoration:none;color:inherit"><span class="num">Email</span><h2 style="font-size:22px;margin:0;word-break:break-all">{{email}}</h2><p>For detailed enquiries and workshop requests</p></a>
+      <div class="card"><span class="num">Based in</span><h2 style="font-size:22px;margin:0">{{cfg:person.city}}, {{cfg:person.region}}</h2><p>Sessions online across India · in person in Siliguri on request</p></div>
+    </div>
+    <p class="center mt-m muted">
+      <a href="{{cfg:contact.linkedin}}" target="_blank" rel="noopener me">LinkedIn</a>{{#if:contact.instagram}} · <a href="{{cfg:contact.instagram}}" target="_blank" rel="noopener me" data-contact="instagram">Instagram</a>{{/if}}
+    </p>
+  </div>
+</section>
+
+<section class="tight">
+  <div class="wrap narrow">
+    <form class="form card" data-form="contact" data-success="contact-ok" style="padding:36px">
+      <h2 style="font-size:28px;margin-bottom:4px">Send a message</h2>
+      <div class="form-row">
+        <div class="field"><label for="c-name">Name</label><input id="c-name" name="name" required autocomplete="name"></div>
+        <div class="field"><label for="c-phone">WhatsApp number</label><input id="c-phone" name="phone" type="tel" required autocomplete="tel" placeholder="+91"></div>
+      </div>
+      <div class="field"><label for="c-email">Email <span class="opt">(optional)</span></label><input id="c-email" name="email" type="email" autocomplete="email"></div>
+      <div class="field">
+        <label for="c-topic">I'm interested in</label>
+        <select id="c-topic" name="interest" required>
+          <option value="">Select…</option>
+          <option>AI Clarity Session</option>
+          <option>AI Growth Plan</option>
+          <option>AI Implementation Intensive</option>
+          <option>A workshop for my college / company</option>
+          <option>A custom AI solution for my business (AI Hive)</option>
+          <option>Something else</option>
+        </select>
+      </div>
+      <div class="field"><label for="c-msg">Message</label><textarea id="c-msg" name="message" required></textarea></div>
+      <button type="submit" class="btn btn-orange btn-block">Send message <span class="arrow">→</span></button>
+    </form>
+    <div id="contact-ok" class="form-success card" style="padding:40px 28px">
+      <h2 style="font-size:30px">Thanks, message received.</h2>
+      <p class="lead">I'll get back to you within one working day.</p>
+    </div>
+  </div>
+</section>
