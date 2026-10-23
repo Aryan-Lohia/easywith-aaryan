@@ -21,6 +21,24 @@ Pushes to `main` run `.github/workflows/deploy-pages.yml` and publish `dist/` au
 
 Then in the repo: **Settings → Pages → Custom domain** → `courses.aryanlohia.com` → Save → enable **Enforce HTTPS** once the certificate is ready.
 
+### If GitHub says “domain not verified” or Enforce HTTPS is greyed out
+
+Two different checks are involved:
+
+1. **Account domain (profile)** — [github.com/settings/pages](https://github.com/settings/pages) → **Add a domain** → `aryanlohia.com` (apex, not `courses`) → create the **TXT** record GitHub shows at  
+   `_github-pages-challenge-Aryan-Lohia.aryanlohia.com` → click **Verify**.  
+   Keep that TXT record permanently. (A TXT only under `courses` is for a different flow and does not replace apex verification.)
+
+2. **Repo DNS + TLS** — Hostinger DNS for `courses` should be **only** a CNAME to `Aryan-Lohia.github.io` (no extra A/AAAA on `courses`). If HTTPS stays blocked, remove the custom domain in repo **Settings → Pages**, wait 2 minutes, add `courses.aryanlohia.com` again, then wait 15–60 minutes for the certificate.
+
+Check what GitHub sees (repo admin):
+
+```bash
+gh api /repos/Aryan-Lohia/easywith-aaryan/pages/health --jq '.domain | {is_valid, dns_resolves, is_https_eligible, reason, https_error, caa_error}'
+```
+
+When `is_https_eligible` is `true`, turn on **Enforce HTTPS** in Pages settings (or `gh api -X PUT ... -F https_enforced=true`).
+
 **Note:** GitHub Pages is static only — `forms.mode: "relay"` (PHP) does not run here. Use `forms.mode: "direct"` or `"whatsapp"` in `site.config.js`, or keep form relay on PHP hosting elsewhere.
 
 ## Folder map
