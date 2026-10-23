@@ -169,6 +169,27 @@ module.exports = {
     // },
   ],
 
+  /* ----------------------------------------------------------------- LOGOS
+     "Workshops, talks & software for" strip on the home page.
+     file → image in src/assets/img/logos/ (transparent PNG/WebP works best).
+     Leave file "" to show the name as a text wordmark until you have the logo.
+     Sizes are balanced automatically from each logo's shape.               */
+  logos: [
+    { name: "Google Developer Student Clubs", file: "google-developer-student-clubs.webp" },
+    { name: "BNI", file: "bni.webp" },
+    { name: "FICCI FLO", file: "ficci-flo.webp" },
+    { name: "TiE Siliguri", file: "tie-siliguri.webp" },
+    { name: "Lions Clubs International", file: "lions-international.webp" },
+    { name: "Nexis", file: "nexis.webp" },
+    { name: "ChatterBox, JD Speakers Institute", file: "chatterbox.webp" },
+    { name: "Army Medical Corps, Indian Army", file: "army-medical-corps.webp" },
+    { name: "GlobalReach Siliguri", file: "globalreach.webp" },
+    { name: "Business N Buddies (BNB)", file: "bnb.webp" },
+    { name: "Mahabir Electricals", file: "" },
+    { name: "Sinhal Brothers", file: "" },
+    { name: "RTI", file: "" },
+  ],
+
   /* ------------------------------------------------------------ NAVIGATION */
   nav: [
     { label: "Clarity Session", page: "clarity" },

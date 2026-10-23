@@ -104,6 +104,7 @@ function render(html, pageKey) {
       case "slots": return esc(cfg.slotsNote);
       case "cfg": return esc(get(cfg, arg));
       case "testimonials": return testimonialsSection(arg || "all");
+      case "logos": return logoItems();
       default: return m;
     }
   });
@@ -150,6 +151,21 @@ function render(html, pageKey) {
     return tag;
   });
   return html;
+}
+
+function logoItems() {
+  return (cfg.logos || []).map(l => {
+    const file = l.file && path.join(SRC, "assets", "img", "logos", l.file);
+    if (!file || !fs.existsSync(file)) {
+      if (l.file) warn(`logos: "${l.file}" not found in src/assets/img/logos/ → showing "${l.name}" as text`);
+      return `<li class="logo-text">${esc(l.name)}</li>`;
+    }
+    // Optical balance: wide wordmarks render shorter, round badges and crests taller.
+    const d = imageSize(file) || { w: 1, h: 1 };
+    const r = d.w / d.h;
+    const h = r >= 4 ? 28 : r >= 3 ? 34 : r >= 2 ? 38 : r >= 1.3 ? 46 : r >= 0.9 ? 52 : 62;
+    return `<li><img src="/assets/img/logos/${esc(l.file)}" alt="${esc(l.name)}" title="${esc(l.name)}" width="${d.w}" height="${d.h}" style="--h:${h}px" loading="lazy" decoding="async" data-lazy></li>`;
+  }).join("\n      ");
 }
 
 function testimonialsSection(filter) {
