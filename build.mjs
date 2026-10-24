@@ -35,6 +35,8 @@ const pagePath = key => {
 };
 const programPath = k => pagePath(programs[k].page);
 const wa = (msg = contact.defaultWhatsAppMessage) => `https://wa.me/${contact.whatsapp}?text=${encodeURIComponent(msg)}`;
+const phoneDigits = String(contact.whatsapp || "").replace(/\D/g, "");
+const telHref = phoneDigits ? `tel:+${phoneDigits}` : "";
 const isoMinutes = m => `PT${Math.floor(m / 60) ? Math.floor(m / 60) + "H" : ""}${m % 60 ? (m % 60) + "M" : ""}`;
 const P = k => {
   if (!programs[k]) throw new Error(`Unknown program "${k}"`);
@@ -125,6 +127,7 @@ function render(html, pageKey) {
     if ((mm = tag.match(/\sdata-pay="(\w+)"/))) { href = payHref(mm[1]); external = true; }
     else if ((mm = tag.match(/\sdata-book="(\w+)"/))) { href = bookHref(mm[1]); external = true; }
     else if ((mm = tag.match(/\sdata-wa(?:="([^"]*)")?[\s>]/))) { href = wa(mm[1] ? unesc(mm[1]) : undefined); external = true; }
+    else if (/\sdata-tel[\s>]/.test(tag)) href = telHref;
     else if (/\sdata-email[\s>]/.test(tag)) href = "mailto:" + contact.email;
     if (href == null) return tag;
     let out = /\shref="/.test(tag) ? tag.replace(/\shref="[^"]*"/, ` href="${esc(href)}"`) : tag.replace("<a", `<a href="${esc(href)}"`);
@@ -410,24 +413,63 @@ function header(key, page) {
 const ICONS = {
   whatsapp: `<svg viewBox="0 0 32 32" aria-hidden="true"><path fill="currentColor" d="M16 3a13 13 0 0 0-11.2 19.6L3 29l6.6-1.7A13 13 0 1 0 16 3Zm0 23.6a10.6 10.6 0 0 1-5.4-1.5l-.4-.2-3.9 1 1-3.8-.3-.4A10.6 10.6 0 1 1 16 26.6Z"/><path fill="currentColor" d="M11.6 9.6c.3 0 .6 0 .8.6l1.1 2.6c.1.3 0 .6-.1.8l-.7.9c-.2.2-.3.5-.1.8a9 9 0 0 0 4.3 3.8c.3.1.6 0 .8-.2l1-1.2c.2-.3.5-.3.8-.2l2.6 1.2c.3.2.5.3.5.5 0 .9-.4 1.8-1.1 2.3-1 .7-2.4.8-4.4 0a14 14 0 0 1-6.5-6.2c-.8-1.6-.7-3.1.3-4.3.3-.4.6-.6.7-.6Z"/></svg>`,
   instagram: `<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.4" cy="6.6" r="1.1" fill="currentColor" stroke="none"/></svg>`,
+  call: `<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 3.8h2.8l1.4 3.4-1.8 1.1a11.5 11.5 0 0 0 5.8 5.8l1.1-1.8 3.4 1.4v2.8c0 .7-.6 1.3-1.3 1.4A14.2 14.2 0 0 1 5.1 5.1c.1-.7.7-1.3 1.4-1.3Z"/></svg>`,
 };
 
 function fab() {
   if (!cfg.fab.enabled) return "";
   const items = [];
   if (cfg.fab.instagram && contact.instagram) items.push(`<a class="fab-btn fab-ig" href="${esc(contact.instagram)}" target="_blank" rel="noopener" aria-label="Follow on Instagram" data-contact="instagram">${ICONS.instagram}<span class="fab-tip">Instagram</span></a>`);
-  if (cfg.fab.whatsapp && contact.whatsapp) items.push(`<a class="fab-btn fab-wa" href="${esc(wa())}" target="_blank" rel="noopener" aria-label="Chat on WhatsApp" data-contact="whatsapp">${ICONS.whatsapp}<span class="fab-tip">Chat with me</span></a>`);
+  if (cfg.fab.call && telHref) items.push(`<a class="fab-btn fab-call" href="${esc(telHref)}" aria-label="Call ${esc(contact.phone)}" data-contact="phone">${ICONS.call}<span class="fab-tip">Call ${esc(contact.phone)}</span></a>`);
+  if (cfg.fab.whatsapp && contact.whatsapp) items.push(`<a class="fab-btn fab-wa" href="${esc(wa())}" target="_blank" rel="noopener" aria-label="Chat on WhatsApp" data-contact="whatsapp">${ICONS.whatsapp}<span class="fab-tip">Chat on WhatsApp</span></a>`);
   return items.length ? `<div class="fab fab-${cfg.fab.position === "left" ? "left" : "right"}">${items.join("")}</div>` : "";
+}
+
+function engagement() {
+  const lines = (cfg.engagement?.fomo || []).filter(Boolean);
+  const fomo = lines.length
+    ? `<div class="fomo" id="fomo" hidden><p></p><button type="button" data-fomo-close aria-label="Dismiss">×</button></div>`
+    : "";
+  const popup = `<div class="enquire" id="enquire" hidden>
+  <div class="enquire-card" role="dialog" aria-modal="true" aria-labelledby="enquire-title">
+    <button type="button" class="enquire-x" data-enquire-close aria-label="Close">×</button>
+    <span class="label">Quick question</span>
+    <h2 id="enquire-title">Want a recommendation for your goal?</h2>
+    <p class="enquire-lead">Send a short enquiry. I reply within one working day, usually on WhatsApp.</p>
+    <form class="form" data-form="enquiry" data-success="enquire-ok">
+      <div class="field"><label for="eq-name">Name</label><input id="eq-name" name="name" required autocomplete="name"></div>
+      <div class="field"><label for="eq-phone">WhatsApp number</label><input id="eq-phone" name="phone" type="tel" required autocomplete="tel" inputmode="tel" placeholder="+91"></div>
+      <div class="field">
+        <label for="eq-interest">I'm interested in</label>
+        <select id="eq-interest" name="interest" required>
+          <option value="">Select…</option>
+          <option>AI Clarity Session</option>
+          <option>AI Growth Plan</option>
+          <option>AI Implementation Intensive</option>
+          <option>Not sure yet</option>
+        </select>
+      </div>
+      <button type="submit" class="btn btn-orange btn-block">Send enquiry <span class="arrow">→</span></button>
+    </form>
+    <div id="enquire-ok" class="form-success">
+      <h2 class="success-title">Enquiry sent.</h2>
+      <p>I'll get back to you within one working day.</p>
+    </div>
+    <p class="enquire-alt">Or <a href="${esc(wa("Hi Aryan, I'd like to enquire about your AI programs."))}" target="_blank" rel="noopener" data-contact="whatsapp">message on WhatsApp</a> · <a href="${esc(telHref)}" data-contact="phone">call ${esc(contact.phone)}</a></p>
+  </div>
+</div>`;
+  return `${fomo}\n${popup}`;
 }
 
 function footer(key, page) {
   const scripts = `<script src="/assets/js/site.js" defer></script>\n<script src="/assets/js/main.js" defer></script>`;
   const legal = `<a href="${pagePath("terms")}">Terms</a> · <a href="${pagePath("refund")}">Refunds</a> · <a href="${pagePath("privacy")}">Privacy</a>`;
   if (page.minimal) {
-    return `<footer class="footer footer-slim"><div class="wrap footer-base"><span>© ${new Date().getFullYear()} ${esc(person.name)} · ${legal}</span><span><a href="mailto:${esc(contact.email)}">${esc(contact.email)}</a></span></div></footer>\n${fab()}\n${scripts}`;
+    return `<footer class="footer footer-slim"><div class="wrap footer-base"><span>© ${new Date().getFullYear()} ${esc(person.name)} · ${legal}</span><span><a href="mailto:${esc(contact.email)}">${esc(contact.email)}</a></span></div></footer>\n${fab()}\n${engagement()}\n${scripts}`;
   }
   const social = [
     contact.whatsapp && `<li><a href="${esc(wa())}" target="_blank" rel="noopener" data-contact="whatsapp">WhatsApp</a></li>`,
+    telHref && `<li><a href="${esc(telHref)}" data-contact="phone">Call ${esc(contact.phone)}</a></li>`,
     `<li><a href="mailto:${esc(contact.email)}">${esc(contact.email)}</a></li>`,
     contact.instagram && `<li><a href="${esc(contact.instagram)}" target="_blank" rel="noopener me" data-contact="instagram">Instagram</a></li>`,
     contact.linkedin && `<li><a href="${esc(contact.linkedin)}" target="_blank" rel="noopener me">LinkedIn</a></li>`,
@@ -449,6 +491,7 @@ function footer(key, page) {
   </div>
 </footer>
 ${fab()}
+${engagement()}
 ${scripts}`;
 }
 
@@ -481,7 +524,15 @@ function runtimeConfig() {
   const pub = {
     siteName: site.name,
     whatsapp: contact.whatsapp,
+    phone: contact.phone,
+    tel: telHref,
     defaultWhatsAppMessage: contact.defaultWhatsAppMessage,
+    engagement: {
+      enquiryDelayMs: cfg.engagement?.enquiryDelayMs ?? 15000,
+      enquiryPages: cfg.engagement?.enquiryPages || [],
+      fomoPages: cfg.engagement?.fomoPages || [],
+      fomo: cfg.engagement?.fomo || [],
+    },
     currency: cfg.currency,
     forms: {
       mode: forms.mode,
@@ -497,6 +548,7 @@ function runtimeConfig() {
       price: current(p),
       priceIsFrom: !!p.priceIsFrom,
       url: programPath(k),
+      applyUrl: payHref(k),
       bookingLink: bookHref(k),
     }])),
   };
@@ -557,7 +609,7 @@ ${Object.entries(programs).map(([k, p]) => `- [${p.name}](${abs(programPath(k))}
 ## Contact
 - [Contact page](${abs(pagePath("contact"))})
 - Email: ${contact.email}
-- WhatsApp: ${contact.phone}
+- WhatsApp and phone: ${contact.phone}
 
 ## Policies
 - [Terms](${abs(pagePath("terms"))}) · [Refund policy](${abs(pagePath("refund"))}) · [Privacy](${abs(pagePath("privacy"))})

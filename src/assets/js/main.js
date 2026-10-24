@@ -67,8 +67,10 @@
     if (!a) return;
     if (a.dataset.pay) track("begin_checkout", programParams(a.dataset.pay));
     else if (a.dataset.book) track("schedule_click", programParams(a.dataset.book));
-    else if (a.dataset.contact || /wa\.me|instagram\.com/.test(a.href)) {
-      track("contact", { method: a.dataset.contact || (a.href.includes("wa.me") ? "whatsapp" : "instagram"), location: a.closest(".fab") ? "fab" : "page" });
+    else if (a.dataset.contact || /wa\.me|instagram\.com/.test(a.href) || a.href.startsWith("tel:")) {
+      const method = a.dataset.contact || (a.href.includes("wa.me") ? "whatsapp" : a.href.startsWith("tel:") ? "phone" : "instagram");
+      const location = a.closest(".fab") ? "fab" : a.closest(".enquire") ? "popup" : "page";
+      track("contact", { method, location });
     }
   });
 
@@ -171,26 +173,86 @@
     });
   });
 
-  // ---------- Application form: pre-select the program, show project questions for the Intensive ----------
+  // ---------- Application form: one short step at a time, then send ----------
   const apply = document.querySelector("[data-apply]");
   if (apply) {
-    const extras = [...apply.querySelectorAll("[data-show-for]")];
-    const goalLabel = apply.querySelector("[data-goal-label]");
-    const sync = () => {
-      const chosen = (apply.querySelector("input[name=program]:checked") || {}).value;
-      extras.forEach(box => {
-        const on = box.dataset.showFor === chosen;
-        box.hidden = !on;
-        // Hidden questions must not block submission or be sent.
-        box.querySelectorAll("input, select, textarea").forEach(el => { el.disabled = !on; });
-      });
-      if (goalLabel) goalLabel.textContent = chosen === "implementation" ? "What do you want to build?" : "What do you want to achieve with AI?";
+    const steps = [...apply.querySelectorAll("[data-step]")];
+    const bar = apply.querySelector(".step-bar div");
+    const count = apply.querySelector("[data-step-count]");
+    const picked = apply.querySelector("[data-picked]");
+    const names = {
+      clarity: "AI Clarity Session",
+      growth: "AI Growth Plan",
+      implementation: "AI Implementation Intensive",
+      "not-sure": "Not sure yet",
     };
+    let index = 0;
+    const chosen = () => (apply.querySelector("input[name=program]:checked") || {}).value || "";
+    const activeSteps = () => steps.filter(step => !step.dataset.showFor || step.dataset.showFor === chosen());
+
+    const paint = () => {
+      const current = activeSteps();
+      if (index > current.length - 1) index = current.length - 1;
+      if (index < 0) index = 0;
+      steps.forEach(step => {
+        const applicable = current.includes(step);
+        const on = step === current[index];
+        step.hidden = !on;
+        step.querySelectorAll("input, select, textarea").forEach(el => { el.disabled = !(applicable && on); });
+      });
+      if (bar) bar.style.width = ((index + 1) / current.length * 100) + "%";
+      if (count) count.textContent = `Step ${index + 1} of ${current.length}`;
+      if (picked) {
+        picked.hidden = !(index > 0 && chosen());
+        const name = picked.querySelector("b");
+        if (name) name.textContent = names[chosen()] || "";
+      }
+      const goalLabel = apply.querySelector("[data-goal-label]");
+      if (goalLabel) goalLabel.textContent = chosen() === "implementation" ? "What do you want to build?" : "What do you want to achieve with AI?";
+    };
+
+    const focusStep = () => {
+      const step = activeSteps()[index];
+      const field = step && step.querySelector("input:not([type=radio]), select, textarea");
+      if (field) field.focus();
+    };
+
+    apply.addEventListener("click", e => {
+      if (e.target.closest("[data-next]")) {
+        const step = activeSteps()[index];
+        const fields = [...step.querySelectorAll("input, select, textarea")].filter(el => !el.disabled);
+        for (const el of fields) {
+          if (!el.checkValidity()) { el.reportValidity(); return; }
+        }
+        index += 1;
+        paint();
+        focusStep();
+      } else if (e.target.closest("[data-change]")) {
+        index = 0;
+        paint();
+      } else if (e.target.closest("[data-back]")) {
+        index = Math.max(0, index - 1);
+        paint();
+        focusStep();
+      }
+    });
+
+    // Enable every answer from earlier steps before the payload is collected.
+    apply.addEventListener("submit", () => {
+      const current = activeSteps();
+      steps.forEach(step => {
+        const applicable = current.includes(step);
+        step.querySelectorAll("input, select, textarea").forEach(el => { el.disabled = !applicable; });
+      });
+    }, true);
+
     const wanted = new URLSearchParams(location.search).get("program");
     const radio = wanted && apply.querySelector(`input[name=program][value="${CSS.escape(wanted)}"]`);
-    if (radio) radio.checked = true;
-    apply.addEventListener("change", e => { if (e.target.name === "program") sync(); });
-    sync();
+    if (radio) {
+      radio.checked = true;
+      index = 1;
+    }
+    paint();
   }
 
   // ---------- "Find my program" quiz ----------
@@ -238,8 +300,10 @@
       out.querySelector("[data-why]").textContent = why[key];
       out.querySelector("[data-rp]").textContent = (p.priceIsFrom ? "from " : "") + inr(p.price);
       const cta = out.querySelector("[data-go]");
-      cta.href = p.url;
-      cta.firstChild.textContent = key === "implementation" ? "See how it works " : "See the program ";
+      cta.href = p.applyUrl || p.url;
+      cta.firstChild.textContent = "Apply for this ";
+      const details = out.querySelector("[data-details]");
+      if (details) details.href = p.url;
       track("quiz_complete", { recommendation: key, ...answers });
     }
     show(0);
@@ -264,5 +328,76 @@
       track("purchase", { ...programParams(key), transaction_id: paymentId });
       store.set("ewa_purchases", seen.concat(paymentId).slice(-20));
     }
+  }
+
+  // ---------- Enquiry popup (once per visit) and occasional scarcity notes ----------
+  const page = document.body.dataset.page;
+  const engagement = S.engagement || {};
+  const sessionOn = key => { try { return sessionStorage.getItem(key) === "1"; } catch (_) { return false; } };
+  const sessionSet = key => { try { sessionStorage.setItem(key, "1"); } catch (_) {} };
+
+  const enquire = document.getElementById("enquire");
+  if (enquire && (engagement.enquiryPages || []).includes(page)) {
+    const sentAt = store.get("ewa_enquiry_sent");
+    const alreadySent = typeof sentAt === "number" && Date.now() - sentAt < 30 * 864e5;
+    const closeBtn = enquire.querySelectorAll("[data-enquire-close]");
+    let lastFocus = null;
+    const closeEnquire = () => {
+      enquire.hidden = true;
+      document.body.classList.remove("enquire-open");
+      sessionSet("ewa_enquiry_dismissed");
+      if (lastFocus) lastFocus.focus();
+    };
+    closeBtn.forEach(btn => btn.addEventListener("click", closeEnquire));
+    enquire.addEventListener("click", e => { if (e.target === enquire) closeEnquire(); });
+    document.addEventListener("keydown", e => {
+      if (e.key === "Escape" && !enquire.hidden) closeEnquire();
+    });
+    const ok = document.getElementById("enquire-ok");
+    if (ok) {
+      new MutationObserver(() => {
+        if (ok.classList.contains("show")) store.set("ewa_enquiry_sent", Date.now());
+      }).observe(ok, { attributes: true, attributeFilter: ["class"] });
+    }
+    if (!alreadySent && !sessionOn("ewa_enquiry_dismissed")) {
+      let waits = 0;
+      const openEnquire = () => {
+        if (sessionOn("ewa_enquiry_dismissed") || !enquire.hidden) return;
+        const active = document.activeElement;
+        if (waits < 2 && active && active.closest && active.closest("form") && !enquire.contains(active)) {
+          waits += 1;
+          setTimeout(openEnquire, 20000);
+          return;
+        }
+        lastFocus = document.activeElement;
+        enquire.hidden = false;
+        document.body.classList.add("enquire-open");
+        const first = enquire.querySelector("#eq-name");
+        if (first) first.focus();
+        track("enquiry_prompt", { page });
+      };
+      setTimeout(openEnquire, engagement.enquiryDelayMs || 15000);
+    }
+  }
+
+  const fomo = document.getElementById("fomo");
+  const lines = engagement.fomo || [];
+  if (fomo && lines.length && (engagement.fomoPages || []).includes(page)) {
+    const text = fomo.querySelector("p");
+    let i = 0, shown = 0;
+    const hide = () => { fomo.hidden = true; };
+    const show = () => {
+      if (shown >= 3 || fomo.dataset.stopped) return;
+      if (enquire && !enquire.hidden) { setTimeout(show, 20000); return; }
+      text.textContent = lines[i % lines.length];
+      i += 1;
+      shown += 1;
+      fomo.hidden = false;
+      setTimeout(hide, 7000);
+      if (shown < 3) setTimeout(show, 55000 + Math.floor(Math.random() * 25000));
+    };
+    const dismiss = fomo.querySelector("[data-fomo-close]");
+    if (dismiss) dismiss.addEventListener("click", () => { fomo.dataset.stopped = "1"; hide(); });
+    setTimeout(show, 35000);
   }
 })();

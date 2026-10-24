@@ -2,39 +2,53 @@
 <section class="apply-page">
   <div class="wrap narrow">
     <span class="label">Book your 1:1 program</span>
-    <h1 class="page-title">Let's find your <span class="accent">slot.</span></h1>
-    <p class="lead mt-s">Tell me a little about you and your goal. I'll confirm your slot and share payment details on WhatsApp, usually within one working day.</p>
+    <h1 class="page-title">A few short steps. Then I take it from there.</h1>
+    <p class="lead mt-s">No payment now. I'll confirm a slot and share payment details on WhatsApp, usually within one working day.</p>
 
     <form class="form card form-card mt-l" data-form="application" data-success="apply-ok" data-apply>
-      <fieldset class="field">
-        <legend class="legend">Which program?</legend>
-        <div class="program-pick">
-          <label class="pick">
-            <input type="radio" name="program" value="clarity" required>
-            <span class="pick-body"><b>AI Clarity Session</b><small>1 × 90 min · <span data-price="clarity">₹1,499</span></small></span>
-          </label>
-          <label class="pick">
-            <input type="radio" name="program" value="growth">
-            <span class="pick-body"><b>AI Growth Plan</b><small>4 weeks · <span data-price="growth">₹5,999</span></small><em class="pick-tag">Most chosen</em></span>
-          </label>
-          <label class="pick">
-            <input type="radio" name="program" value="implementation">
-            <span class="pick-body"><b>AI Implementation Intensive</b><small>4 build sessions · from <span data-price="implementation">₹14,999</span></small></span>
-          </label>
-          <label class="pick">
-            <input type="radio" name="program" value="not-sure">
-            <span class="pick-body"><b>Not sure yet</b><small>Help me choose the right one</small></span>
-          </label>
-        </div>
-      </fieldset>
+      <div class="step-bar" aria-hidden="true"><div></div></div>
+      <p class="step-count" data-step-count>Step 1 of 4</p>
+      <p class="step-picked" data-picked hidden><b></b> <button type="button" data-change>Change</button></p>
 
-      <div class="form-row">
+      <div class="step" data-step="program">
+        <h2 class="step-title">Which program?</h2>
+        <fieldset class="field">
+          <legend class="hp">Which program?</legend>
+          <div class="program-pick">
+            <label class="pick">
+              <input type="radio" name="program" value="clarity" required>
+              <span class="pick-body"><b>AI Clarity Session</b><small>1 × 90 min · <span data-price="clarity">₹1,499</span></small></span>
+            </label>
+            <label class="pick">
+              <input type="radio" name="program" value="growth">
+              <span class="pick-body"><b>AI Growth Plan</b><small>4 weeks · <span data-price="growth">₹5,999</span></small><em class="pick-tag">Most chosen</em></span>
+            </label>
+            <label class="pick">
+              <input type="radio" name="program" value="implementation">
+              <span class="pick-body"><b>AI Implementation Intensive</b><small>4 build sessions · from <span data-price="implementation">₹14,999</span></small></span>
+            </label>
+            <label class="pick">
+              <input type="radio" name="program" value="not-sure">
+              <span class="pick-body"><b>Not sure yet</b><small>Help me choose the right one</small></span>
+            </label>
+          </div>
+        </fieldset>
+        <button type="button" class="btn btn-orange btn-block" data-next>Continue <span class="arrow">→</span></button>
+      </div>
+
+      <div class="step" data-step="contact" hidden>
+        <h2 class="step-title">How should I reach you?</h2>
         <div class="field"><label for="a-name">Full name</label><input id="a-name" name="name" required autocomplete="name"></div>
         <div class="field"><label for="a-phone">WhatsApp number</label><input id="a-phone" name="phone" type="tel" inputmode="tel" required autocomplete="tel" placeholder="+91"></div>
+        <div class="field"><label for="a-email">Email</label><input id="a-email" name="email" type="email" inputmode="email" required autocomplete="email"></div>
+        <div class="step-nav">
+          <button type="button" data-back>← Back</button>
+          <button type="button" class="btn btn-orange" data-next>Continue <span class="arrow">→</span></button>
+        </div>
       </div>
-      <div class="field"><label for="a-email">Email</label><input id="a-email" name="email" type="email" inputmode="email" required autocomplete="email"></div>
 
-      <div class="form-row">
+      <div class="step" data-step="goal" hidden>
+        <h2 class="step-title">What's the goal?</h2>
         <div class="field">
           <label for="a-role">Which best describes you?</label>
           <select id="a-role" name="role" required>
@@ -55,49 +69,54 @@
             <option>Regularly, and I want to go further</option>
           </select>
         </div>
+        <div class="field">
+          <label for="a-goal" data-goal-label>What do you want to achieve with AI?</label>
+          <textarea id="a-goal" name="goal" required placeholder="Be as specific as you can, e.g. 'cut my weekly reporting time in half'."></textarea>
+        </div>
+        <div class="step-nav">
+          <button type="button" data-back>← Back</button>
+          <button type="button" class="btn btn-orange" data-next>Continue <span class="arrow">→</span></button>
+        </div>
       </div>
 
-      <div class="field">
-        <label for="a-goal" data-goal-label>What do you want to achieve with AI?</label>
-        <textarea id="a-goal" name="goal" required placeholder="Be as specific as you can, e.g. 'cut my weekly reporting time in half' or 'plan my final-year project'."></textarea>
-      </div>
-
-      <!-- Extra questions, shown only for the Implementation Intensive -->
-      <div class="form-extra" data-show-for="implementation" hidden>
-        <p class="extra-title">A few details about your project</p>
-        <div class="form-row">
-          <div class="field">
-            <label for="a-skill">Your technical level</label>
-            <select id="a-skill" name="technical_level" required>
-              <option value="">Select…</option>
-              <option>I use AI tools, but don't code</option>
-              <option>Some no-code / low-code experience</option>
-              <option>I can code a little</option>
-              <option>I'm a professional developer</option>
-            </select>
-          </div>
-          <div class="field">
-            <label for="a-budget">Budget range</label>
-            <select id="a-budget" name="budget" required>
-              <option value="">Select…</option>
-              <option>₹15,000 – ₹25,000</option>
-              <option>₹25,000 – ₹50,000</option>
-              <option>₹50,000+</option>
-              <option>Not sure yet</option>
-            </select>
-          </div>
+      <div class="step" data-step="project" data-show-for="implementation" hidden>
+        <h2 class="step-title">A few details about the build.</h2>
+        <div class="field">
+          <label for="a-skill">Your technical level</label>
+          <select id="a-skill" name="technical_level" required>
+            <option value="">Select…</option>
+            <option>I use AI tools, but don't code</option>
+            <option>Some no-code / low-code experience</option>
+            <option>I can code a little</option>
+            <option>I'm a professional developer</option>
+          </select>
         </div>
         <div class="field">
-          <label>What are you looking for?</label>
+          <label for="a-budget">Budget range</label>
+          <select id="a-budget" name="budget" required>
+            <option value="">Select…</option>
+            <option>₹15,000 – ₹25,000</option>
+            <option>₹25,000 – ₹50,000</option>
+            <option>₹50,000+</option>
+            <option>Not sure yet</option>
+          </select>
+        </div>
+        <fieldset class="field">
+          <legend class="legend">What are you looking for?</legend>
           <div class="radio-group">
             <label><input type="radio" name="intent" value="Learn by building with guidance" required> To learn by building it myself, with guidance</label>
             <label><input type="radio" name="intent" value="Wants it built for them"> I'd rather have it built and deployed for me</label>
           </div>
           <p class="hint">Both are fine. The second is usually a software project with AI Hive rather than training.</p>
+        </fieldset>
+        <div class="step-nav">
+          <button type="button" data-back>← Back</button>
+          <button type="button" class="btn btn-orange" data-next>Continue <span class="arrow">→</span></button>
         </div>
       </div>
 
-      <div class="form-row">
+      <div class="step" data-step="schedule" hidden>
+        <h2 class="step-title">When works for you?</h2>
         <div class="field">
           <label for="a-when">Preferred session time</label>
           <select id="a-when" name="preferred_time" required>
@@ -119,12 +138,13 @@
             <option>Just exploring</option>
           </select>
         </div>
+        <div class="field"><label for="a-source">How did you hear about me? <span class="opt">(optional)</span></label><input id="a-source" name="source" placeholder="Instagram, LinkedIn, a friend…"></div>
+        <div class="step-nav">
+          <button type="button" data-back>← Back</button>
+          <button type="submit" class="btn btn-orange">Send my application <span class="arrow">→</span></button>
+        </div>
+        <p class="cta-note center">No payment now. You'll pay only after your slot is confirmed.</p>
       </div>
-
-      <div class="field"><label for="a-source">How did you hear about me? <span class="opt">(optional)</span></label><input id="a-source" name="source" placeholder="Instagram, LinkedIn, a friend…"></div>
-
-      <button type="submit" class="btn btn-orange btn-block">Send my application <span class="arrow">→</span></button>
-      <p class="cta-note center" style="margin-top:0">No payment now. You'll pay only after your slot is confirmed.</p>
     </form>
 
     <div id="apply-ok" class="form-success card form-card mt-l">

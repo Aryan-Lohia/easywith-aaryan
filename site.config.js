@@ -50,8 +50,8 @@ module.exports = {
 
   /* --------------------------------------------------------------- CONTACT */
   contact: {
-    whatsapp: "917864955155",            // international format, digits only
-    phone: "+91 78649 55155",
+    whatsapp: "919239827178",            // international format, digits only (91 + 9239827178)
+    phone: "+91 92398 27178",            // same number: calls and WhatsApp
     email: "aryan@theaihive.org",
     // Full profile URLs. Leave "" to hide a button/link everywhere.
     instagram: "https://www.instagram.com/easywithaaryan",                        // e.g. "https://www.instagram.com/yourhandle"
@@ -64,15 +64,30 @@ module.exports = {
   fab: {
     enabled: true,
     whatsapp: true,                       // shows if contact.whatsapp is set
+    call: true,                           // shows a call button for contact.phone
     instagram: true,                      // shows if contact.instagram is set
     position: "right",                    // "right" | "left"
+  },
+
+  /* ---------------------------------------------- ENQUIRY POPUP & SCARCITY
+     Popup opens once per visit, 15 seconds after landing on a program page.
+     Scarcity lines rotate in a small note. Only say things that are true. */
+  engagement: {
+    enquiryDelayMs: 15000,
+    enquiryPages: ["home", "clarity", "growth", "implementation", "contact"],
+    fomoPages: ["home", "clarity", "growth", "implementation"],
+    fomo: [
+      "Limited 1:1 slots each month. When this month fills, the next opening is the month after.",
+      "Clarity and Growth are on launch pricing for a short time.",
+      "Sessions are live and one-to-one, so only a handful of people train with me each month.",
+    ],
   },
 
   /* ----------------------------------------------------- TRACKING TAGS
      Paste IDs to switch each one on. Leave "" to switch off.            */
   tracking: {
     googleTagManagerId: "",               // "GTM-XXXXXXX"
-    googleAnalyticsId: "",                // "G-XXXXXXXXXX" (skip if GA4 runs inside GTM)
+    googleAnalyticsId: "G-89XGBBMWR6",    // "G-XXXXXXXXXX" (skip if GA4 runs inside GTM)
     googleAdsId: "",                      // "AW-XXXXXXXXX"
     googleAdsConversionLabels: {          // from Google Ads → Conversions
       lead: "",
@@ -210,7 +225,7 @@ module.exports = {
       ogImage: "og/og-home.jpg",
       schema: ["courseList"],
       priority: 1.0,
-      cta: { label: "See programs", href: "#programs" },
+      cta: { label: "Apply", page: "apply" },
     },
     clarity: {
       src: "clarity.html", path: "/ai-clarity-session/",
