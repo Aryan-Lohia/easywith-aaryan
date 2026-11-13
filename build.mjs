@@ -520,8 +520,20 @@ ${footer(key, page)}
 }
 
 /* ------------------------------------------------------ public config */
+function directWebhookEndpoint() {
+  if (!forms.webhookUrl) return "";
+  try {
+    const u = new URL(forms.webhookUrl);
+    if (forms.webhookSecret) u.searchParams.set("secret", forms.webhookSecret);
+    return u.toString();
+  } catch (_) {
+    return forms.webhookUrl;
+  }
+}
+
 function runtimeConfig() {
   const pub = {
+    siteUrl: siteUrl,
     siteName: site.name,
     whatsapp: contact.whatsapp,
     phone: contact.phone,
@@ -536,7 +548,9 @@ function runtimeConfig() {
     currency: cfg.currency,
     forms: {
       mode: forms.mode,
-      endpoint: forms.mode === "relay" ? "/api/submit.php" : forms.mode === "direct" ? forms.webhookUrl : "",
+      endpoint: forms.mode === "relay" ? "/api/submit.php" : forms.mode === "direct" ? directWebhookEndpoint() : "",
+      webhookUrl: forms.mode === "direct" ? forms.webhookUrl : "",
+      webhookSecret: forms.mode === "direct" ? (forms.webhookSecret || "") : "",
     },
     ads: {
       id: tracking.googleAdsId,
@@ -677,7 +691,7 @@ function checks() {
   if (!contact.instagram) warn("contact.instagram is empty → Instagram button/link hidden");
   if (forms.mode !== "whatsapp" && !forms.webhookUrl) warn(`forms.webhookUrl is empty → form answers will be sent via WhatsApp`);
   if (forms.mode === "relay" && forms.webhookUrl && !forms.webhookSecret) warn("forms.webhookSecret is empty → webhook requests are unsigned");
-  if (forms.mode === "direct" && forms.webhookSecret) warn("forms.mode is \"direct\": the secret is NOT sent from the browser (it would be public). Use \"relay\" to sign requests.");
+  if (forms.mode === "direct" && forms.webhookSecret) warn("forms.mode is \"direct\": webhook secret is in the published site (required for GitHub Pages). Use \"relay\" on PHP hosting to keep it private.");
   if (!Object.values(tracking).some(v => typeof v === "string" && v)) warn("No tracking tags configured (GA4 / GTM / Meta Pixel / Clarity)");
   if (!cfg.testimonials?.length) warn("No testimonials yet → testimonial sections are hidden");
   for (const [k, p] of Object.entries(pages)) {

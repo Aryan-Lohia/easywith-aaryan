@@ -111,9 +111,10 @@ module.exports = {
        "whatsapp" → no webhook; answers open as a pre-filled WhatsApp message.
      If delivery fails for any reason, the visitor gets the WhatsApp fallback. */
   forms: {
-    mode: "relay",
-    webhookUrl: "",                       // [SERVER-ONLY in relay mode] n8n / Make / Pabbly / your API
-    webhookSecret: "",                    // [SERVER-ONLY] used to sign requests (HMAC-SHA256)
+  // GitHub Pages is static — use "direct". Use "relay" only on PHP hosting (Hostinger).
+    mode: "direct",
+    webhookUrl: "https://backend.theaihive.io/api/v1/input/inbound-webhook/550cc97d9fb74e859d19f4bd4dfb935242764088dcaf311a5f80a4e335da3acc",
+    webhookSecret: "FjpLNQpBoGDyBzW7",    // [PUBLIC in direct mode] sent via ?secret= on the webhook URL
     extraHeaders: {},                     // [SERVER-ONLY] e.g. { "Authorization": "Bearer …" }
     allowedOrigins: [],                   // [SERVER-ONLY] defaults to site.url
     notifyEmail: "",                      // [SERVER-ONLY] optional: also email each submission (uses PHP mail())

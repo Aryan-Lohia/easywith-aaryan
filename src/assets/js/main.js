@@ -102,6 +102,87 @@
     if (offer) new IntersectionObserver(([e]) => { offerVisible = e.isIntersecting; update(); }).observe(offer);
   }
 
+  const strip = (v, max) => {
+    const s = String(v ?? "").replace(/<[^>]*>/g, "").trim();
+    return s.length > max ? s.slice(0, max) : s;
+  };
+
+  const relayPayload = raw => {
+    if (strip(raw.data?.website, 500)) return null;
+    if ((raw.elapsedMs ?? 99999) < 2500) return null;
+    const data = {};
+    Object.entries(raw.data || {}).forEach(([k, v]) => {
+      if (k === "website" || v == null || v === "") return;
+      data[k] = strip(Array.isArray(v) ? v.join(", ") : v, 5000);
+    });
+    const attribution = {};
+    Object.entries(raw.attribution || {}).forEach(([k, v]) => {
+      attribution[k] = strip(v, 500);
+    });
+    const form = String(raw.form || "form").toLowerCase().replace(/[^a-z0-9-]/g, "") || "form";
+    return {
+      event: "form_submission",
+      form,
+      submittedAt: new Date().toISOString(),
+      site: S.siteUrl || location.origin,
+      page: strip(raw.page, 300),
+      data,
+      attribution,
+      meta: { userAgent: strip(navigator.userAgent || "", 400) },
+    };
+  };
+
+  const sendToWebhook = async body => {
+    const json = JSON.stringify(body);
+    const direct = S.forms.mode === "direct";
+    const url = S.forms.endpoint || "";
+    if (!url) return false;
+
+    if (direct) {
+      // GitHub Pages has no PHP relay; theaihive webhook has no CORS yet — auth via ?secret= on endpoint.
+      try {
+        await fetch(url, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "text/plain" },
+          body: json,
+        });
+        return true;
+      } catch (_) {
+        return false;
+      }
+    }
+
+    try {
+      const res = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: json,
+      });
+      return res.ok;
+    } catch (_) {
+      return false;
+    }
+  };
+
+  const deliverForm = async raw => {
+    if (S.forms.mode === "relay") {
+      try {
+        const res = await fetch(S.forms.endpoint, {
+          method: "POST",
+          headers: { "Content-Type": "application/json", Accept: "application/json" },
+          body: JSON.stringify(raw),
+        });
+        return res.ok;
+      } catch (_) {
+        return false;
+      }
+    }
+    const body = relayPayload(raw);
+    if (!body) return true;
+    return sendToWebhook(body);
+  };
+
   // ---------- Forms → relay / webhook, with a WhatsApp fallback ----------
   document.querySelectorAll("form[data-form]").forEach(form => {
     const started = Date.now();
@@ -130,17 +211,7 @@
         attribution: store.get("ewa_attr") || {},
       };
 
-      let delivered = false;
-      if (S.forms.endpoint) {
-        try {
-          const res = await fetch(S.forms.endpoint, {
-            method: "POST",
-            headers: { "Content-Type": "application/json", Accept: "application/json" },
-            body: JSON.stringify(payload),
-          });
-          delivered = res.ok;
-        } catch (_) { delivered = false; }
-      }
+      const delivered = S.forms.endpoint ? await deliverForm(payload) : false;
 
       track("generate_lead", { form: form.dataset.form, delivered });
 
