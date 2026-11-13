@@ -551,6 +551,7 @@ function runtimeConfig() {
       endpoint: forms.mode === "relay" ? "/api/submit.php" : forms.mode === "direct" ? directWebhookEndpoint() : "",
       webhookUrl: forms.mode === "direct" ? forms.webhookUrl : "",
       webhookSecret: forms.mode === "direct" ? (forms.webhookSecret || "") : "",
+      webhookForms: forms.webhookForms || ["application", "needs-assessment"],
     },
     ads: {
       id: tracking.googleAdsId,

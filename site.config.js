@@ -118,6 +118,8 @@ module.exports = {
     extraHeaders: {},                     // [SERVER-ONLY] e.g. { "Authorization": "Bearer …" }
     allowedOrigins: [],                   // [SERVER-ONLY] defaults to site.url
     notifyEmail: "",                      // [SERVER-ONLY] optional: also email each submission (uses PHP mail())
+    // Full applications go to the webhook; short contact / enquiry forms open WhatsApp.
+    webhookForms: ["application", "needs-assessment"],
   },
 
   /* -------------------------------------------------------------- PROGRAMS */

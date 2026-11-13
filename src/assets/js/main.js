@@ -165,6 +165,15 @@
     }
   };
 
+  const webhookForms = new Set(S.forms.webhookForms || ["application", "needs-assessment"]);
+
+  const formDataToText = data => Object.entries(data)
+    .filter(([k, v]) => v && k !== "website")
+    .map(([k, v]) => `${k.replace(/_/g, " ")}: ${v}`)
+    .join("\n");
+
+  const whatsAppHandoff = (formName, data) => waLink(`[${formName}]\n${formDataToText(data)}`);
+
   const deliverForm = async raw => {
     if (S.forms.mode === "relay") {
       try {
@@ -211,27 +220,47 @@
         attribution: store.get("ewa_attr") || {},
       };
 
-      const delivered = S.forms.endpoint ? await deliverForm(payload) : false;
+      const useWebhook = webhookForms.has(form.dataset.form);
+      let delivered = false;
+      let channel = "none";
 
-      track("generate_lead", { form: form.dataset.form, delivered });
+      if (useWebhook) {
+        delivered = S.forms.endpoint ? await deliverForm(payload) : false;
+        channel = "webhook";
+      } else {
+        const href = whatsAppHandoff(form.dataset.form, data);
+        window.open(href, "_blank", "noopener,noreferrer");
+        delivered = true;
+        channel = "whatsapp";
+      }
+
+      track("generate_lead", { form: form.dataset.form, delivered, channel });
 
       const ok = document.getElementById(form.dataset.success);
       form.hidden = true;
       if (ok) {
-        if (!delivered) {
-          // Couldn't reach the webhook: hand the visitor a ready-to-send WhatsApp message.
-          const text = Object.entries(data)
-            .filter(([k, v]) => v && k !== "website")
-            .map(([k, v]) => `${k.replace(/_/g, " ")}: ${v}`)
-            .join("\n");
+        if (channel === "whatsapp") {
+          const href = whatsAppHandoff(form.dataset.form, data);
           const fb = document.createElement("div");
           fb.className = "fallback";
-          fb.innerHTML = '<p>One last step: tap below to send your answers on WhatsApp.</p>';
+          fb.innerHTML = "<p>Send the pre-filled message on WhatsApp so I receive your details.</p>";
           const a = document.createElement("a");
           a.className = "btn btn-orange";
           a.target = "_blank";
           a.rel = "noopener";
-          a.href = waLink(`[${form.dataset.form}]\n${text}`);
+          a.href = href;
+          a.textContent = "Open WhatsApp →";
+          fb.appendChild(a);
+          ok.appendChild(fb);
+        } else if (!delivered) {
+          const fb = document.createElement("div");
+          fb.className = "fallback";
+          fb.innerHTML = "<p>One last step: tap below to send your answers on WhatsApp.</p>";
+          const a = document.createElement("a");
+          a.className = "btn btn-orange";
+          a.target = "_blank";
+          a.rel = "noopener";
+          a.href = whatsAppHandoff(form.dataset.form, data);
           a.textContent = "Send on WhatsApp →";
           fb.appendChild(a);
           ok.appendChild(fb);
