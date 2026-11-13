@@ -164,15 +164,17 @@
     if (!url) return false;
 
     if (direct) {
-      // GitHub Pages has no PHP relay; theaihive webhook has no CORS yet — auth via ?secret= on endpoint.
+      const blob = new Blob([json], { type: "text/plain;charset=UTF-8" });
+      if (typeof navigator.sendBeacon === "function" && navigator.sendBeacon(url, blob)) return true;
       try {
-        await fetch(url, {
+        const res = await fetch(url, {
           method: "POST",
           mode: "no-cors",
-          headers: { "Content-Type": "text/plain" },
+          headers: { "Content-Type": "text/plain;charset=UTF-8" },
           body: json,
+          keepalive: true,
         });
-        return true;
+        return res.type === "opaque" || res.ok;
       } catch (_) {
         return false;
       }
@@ -229,6 +231,11 @@
 
     form.addEventListener("submit", async e => {
       e.preventDefault();
+      if (form.dataset.apply) {
+        form.querySelectorAll("input, select, textarea").forEach(el => {
+          if (el.name && el.name !== "website") el.disabled = false;
+        });
+      }
       const btn = form.querySelector("[type=submit]");
       const label = btn.innerHTML;
       btn.disabled = true;

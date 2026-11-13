@@ -19,6 +19,7 @@ const cfg = require("./site.config.js");
 const warnings = [];
 const warn = msg => warnings.push(msg);
 const BUILD_DATE = new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Kolkata" });
+const ASSET_V = spawnSync("git", ["rev-parse", "--short", "HEAD"], { cwd: ROOT }).stdout.toString().trim() || BUILD_DATE.replace(/-/g, "");
 
 /* ------------------------------------------------------------- helpers */
 const { site, person, contact, programs, pages, tracking, forms } = cfg;
@@ -380,7 +381,7 @@ ${t.googleSiteVerification ? `<meta name="google-site-verification" content="${e
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600&family=Playfair+Display:ital,wght@0,500;1,500&family=Poppins:wght@500;600&family=Space+Grotesk:wght@500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/assets/css/style.css">
+<link rel="stylesheet" href="/assets/css/style.css?v=${ASSET_V}">
 ${lcpSrc ? `<link rel="preload" as="image" href="${lcpSrc}" fetchpriority="high">\n` : ""}${structuredData(key, page, body)}
 ${trackingHead()}
 </head>`;
@@ -462,7 +463,7 @@ function engagement() {
 }
 
 function footer(key, page) {
-  const scripts = `<script src="/assets/js/site.js" defer></script>\n<script src="/assets/js/main.js" defer></script>`;
+  const scripts = `<script src="/assets/js/site.js?v=${ASSET_V}" defer></script>\n<script src="/assets/js/main.js?v=${ASSET_V}" defer></script>`;
   const legal = `<a href="${pagePath("terms")}">Terms</a> · <a href="${pagePath("refund")}">Refunds</a> · <a href="${pagePath("privacy")}">Privacy</a>`;
   if (page.minimal) {
     return `<footer class="footer footer-slim"><div class="wrap footer-base"><span>© ${new Date().getFullYear()} ${esc(person.name)} · ${legal}</span><span><a href="mailto:${esc(contact.email)}">${esc(contact.email)}</a></span></div></footer>\n${fab()}\n${engagement()}\n${scripts}`;
