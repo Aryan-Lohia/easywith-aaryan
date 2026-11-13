@@ -530,9 +530,8 @@ h1, h2, h3 { overflow-wrap: break-word; hyphens: manual; }
 @media (max-width: 820px)  { .logo-strip { --cols: 4; --gap-x: 22px; } }
 @media (max-width: 640px) {
   .proof { padding: 34px 0; }
-  .logo-strip { --cols: 3; --gap-x: 14px; row-gap: 22px; }
-  .logo-strip li { min-height: 54px; }
-  .logo-strip img { height: calc(var(--h, 40px) * .8); }
-  .logo-text { font-size: 14px; }
+  .logo-strip { --cols: 2; --gap-x: 20px; row-gap: 26px; }
+  .logo-strip li { min-height: 62px; }
+  .logo-strip img { height: calc(var(--h, 40px) * .95); }
+  .logo-text { font-size: 16px; line-height: 1.25; padding: 0 4px; }
 }
-@media (max-width: 360px) { .logo-strip { --cols: 2; } }
