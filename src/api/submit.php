@@ -71,19 +71,34 @@ foreach ((array)($in['attribution'] ?? []) as $k => $v) {
     $attr[preg_replace('/[^a-zA-Z0-9_\-]/', '', (string)$k)] = $clean($v, 500);
 }
 
-$payload = [
-    'event'       => 'form_submission',
-    'form'        => $form,
-    'submittedAt' => gmdate('c'),
-    'site'        => $config['siteUrl'],
-    'page'        => $clean($in['page'] ?? '', 300),
-    'data'        => $data,
-    'attribution' => $attr,
-    'meta'        => [
-        'ip'        => $ip,
-        'userAgent' => $clean($_SERVER['HTTP_USER_AGENT'] ?? '', 400),
+$attrFlat = [];
+foreach ($attr as $k => $v) {
+    if ($v !== '') $attrFlat['attribution_' . $k] = $v;
+}
+$fields = [];
+foreach ($data as $k => $v) {
+    $fields[] = ['name' => $k, 'value' => $v];
+}
+$payload = array_merge(
+    [
+        'event'       => 'form_submission',
+        'form'        => $form,
+        'submittedAt' => gmdate('c'),
+        'site'        => $config['siteUrl'],
+        'page'        => $clean($in['page'] ?? '', 300),
     ],
-];
+    $data,
+    $attrFlat,
+    [
+        'fields'      => $fields,
+        'data'        => $data,
+        'attribution' => $attr,
+        'meta'        => [
+            'ip'        => $ip,
+            'userAgent' => $clean($_SERVER['HTTP_USER_AGENT'] ?? '', 400),
+        ],
+    ]
+);
 $body = json_encode($payload, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 
 $delivered = false;

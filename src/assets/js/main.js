@@ -120,16 +120,41 @@
       attribution[k] = strip(v, 500);
     });
     const form = String(raw.form || "form").toLowerCase().replace(/[^a-z0-9-]/g, "") || "form";
+    const attrFlat = {};
+    Object.entries(attribution).forEach(([k, v]) => {
+      if (v) attrFlat[`attribution_${k}`] = v;
+    });
+    const fields = Object.entries(data).map(([name, value]) => ({ name, value }));
     return {
       event: "form_submission",
       form,
       submittedAt: new Date().toISOString(),
       site: S.siteUrl || location.origin,
       page: strip(raw.page, 300),
+      ...data,
+      ...attrFlat,
+      fields,
       data,
       attribution,
       meta: { userAgent: strip(navigator.userAgent || "", 400) },
     };
+  };
+
+  const collectFormData = form => {
+    const data = {};
+    const isApply = !!form.dataset.apply;
+    form.querySelectorAll("input, select, textarea").forEach(el => {
+      const name = el.name;
+      if (!name || name === "website") return;
+      if (el.type === "radio" || el.type === "checkbox") {
+        if (!el.checked) return;
+      }
+      if (!isApply && el.disabled) return;
+      const v = String(el.value ?? "").trim();
+      if (!v) return;
+      data[name] = data[name] ? `${data[name]}, ${v}` : v;
+    });
+    return data;
   };
 
   const sendToWebhook = async body => {
@@ -209,9 +234,7 @@
       btn.disabled = true;
       btn.textContent = "Sending…";
 
-      const fd = new FormData(form);
-      const data = {};
-      fd.forEach((v, k) => { data[k] = data[k] ? `${data[k]}, ${v}` : v; });
+      const data = collectFormData(form);
       const payload = {
         form: form.dataset.form,
         page: location.pathname + location.search,
