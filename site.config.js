@@ -78,7 +78,7 @@ module.exports = {
     fomoPages: ["home", "clarity", "growth", "implementation"],
     fomo: [
       "Limited 1:1 slots each month. When this month fills, the next opening is the month after.",
-      "Clarity and Growth are on launch pricing for a short time.",
+      "Three programs at fixed prices — pick the depth that fits your goal.",
       "Sessions are live and one-to-one, so only a handful of people train with me each month.",
     ],
   },
@@ -127,8 +127,8 @@ module.exports = {
       name: "AI Clarity Session",
       short: "Clarity Session",
       page: "clarity",
-      price: 2499,
-      launchPrice: 1499,                  // null = launch offer off
+      price: 2500,
+      launchPrice: null,                  // null = launch offer off
       sessions: 1,
       minutesPerSession: 90,
       bookingLink: "",                    // Calendly / Cal.com 90-min event
@@ -138,8 +138,8 @@ module.exports = {
       name: "AI Growth Plan",
       short: "Growth Plan",
       page: "growth",
-      price: 7999,
-      launchPrice: 5999,
+      price: 8000,
+      launchPrice: null,
       sessions: 4,
       minutesPerSession: 90,
       bookingLink: "",
@@ -149,9 +149,9 @@ module.exports = {
       name: "AI Implementation Intensive",
       short: "Implementation Intensive",
       page: "implementation",
-      price: 14999,                       // shown as "from ₹14,999"
+      price: 12000,
       launchPrice: null,
-      priceIsFrom: true,
+      priceIsFrom: false,
       sessions: 4,
       minutesPerSession: 90,
       bookingLink: "",                    // discovery-call booking link
