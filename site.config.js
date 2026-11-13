@@ -50,8 +50,8 @@ module.exports = {
 
   /* --------------------------------------------------------------- CONTACT */
   contact: {
-    whatsapp: "919239827178",            // international format, digits only (91 + 9239827178)
-    phone: "+91 92398 27178",            // same number: calls and WhatsApp
+    whatsapp: "917864955155",            // international format, digits only (91 + 7864955155)
+    phone: "+91 78649 55155",            // same number: calls and WhatsApp
     email: "aryan@theaihive.org",
     // Full profile URLs. Leave "" to hide a button/link everywhere.
     instagram: "https://www.instagram.com/easywithaaryan",                        // e.g. "https://www.instagram.com/yourhandle"
