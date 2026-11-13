@@ -157,36 +157,56 @@
     return data;
   };
 
-  const sendToWebhook = async body => {
-    const json = JSON.stringify(body);
-    const direct = S.forms.mode === "direct";
-    const url = S.forms.endpoint || "";
-    if (!url) return false;
-
-    if (direct) {
-      const blob = new Blob([json], { type: "text/plain;charset=UTF-8" });
-      if (typeof navigator.sendBeacon === "function" && navigator.sendBeacon(url, blob)) return true;
-      try {
-        const res = await fetch(url, {
-          method: "POST",
-          mode: "no-cors",
-          headers: { "Content-Type": "text/plain;charset=UTF-8" },
-          body: json,
-          keepalive: true,
-        });
-        return res.type === "opaque" || res.ok;
-      } catch (_) {
-        return false;
-      }
+  const webhookAccepted = async res => {
+    if (!res.ok) return false;
+    try {
+      const out = await res.json();
+      return out.ok === true && out.deduped !== true && (out.id != null || out.captured === true);
+    } catch (_) {
+      return false;
     }
+  };
 
+  const postBrowserRelay = async raw => {
+    const url = S.forms.browserRelayUrl || "";
+    if (!url) return false;
     try {
       const res = await fetch(url, {
         method: "POST",
+        mode: "cors",
+        credentials: "omit",
         headers: { "Content-Type": "application/json", Accept: "application/json" },
-        body: json,
+        body: JSON.stringify(raw),
       });
-      return res.ok;
+      if (!res.ok) return false;
+      try {
+        const out = await res.json();
+        return out.ok === true;
+      } catch (_) {
+        return res.ok;
+      }
+    } catch (_) {
+      return false;
+    }
+  };
+
+  const sendToWebhook = async body => {
+    const url = S.forms.webhookUrl || "";
+    const secret = S.forms.webhookSecret || "";
+    if (!url || !secret) return false;
+    try {
+      const res = await fetch(url, {
+        method: "POST",
+        mode: "cors",
+        credentials: "omit",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          "X-Webhook-Secret": secret,
+        },
+        body: JSON.stringify(body),
+      });
+      return webhookAccepted(res);
     } catch (_) {
       return false;
     }
@@ -213,6 +233,10 @@
       } catch (_) {
         return false;
       }
+    }
+    if (S.forms.browserRelayUrl) {
+      const viaRelay = await postBrowserRelay(raw);
+      if (viaRelay) return true;
     }
     const body = relayPayload(raw);
     if (!body) return true;
@@ -255,7 +279,7 @@
       let channel = "none";
 
       if (useWebhook) {
-        delivered = S.forms.endpoint ? await deliverForm(payload) : false;
+        delivered = await deliverForm(payload);
         channel = "webhook";
       } else {
         const href = whatsAppHandoff(form.dataset.form, data);

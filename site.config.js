@@ -111,10 +111,12 @@ module.exports = {
        "whatsapp" → no webhook; answers open as a pre-filled WhatsApp message.
      If delivery fails for any reason, the visitor gets the WhatsApp fallback. */
   forms: {
-  // GitHub Pages is static — use "direct". Use "relay" only on PHP hosting (Hostinger).
+    // GitHub Pages cannot call the inbound webhook directly (needs JSON + X-Webhook-Secret header).
+    // Set browserRelayUrl to a CORS-enabled relay (e.g. Hostinger dist/api/submit.php, or a route on backend.theaihive.io).
     mode: "direct",
+    browserRelayUrl: "",                  // e.g. "https://YOUR-PHP-HOST/api/submit.php"
     webhookUrl: "https://backend.theaihive.io/api/v1/input/inbound-webhook/550cc97d9fb74e859d19f4bd4dfb935242764088dcaf311a5f80a4e335da3acc",
-    webhookSecret: "FjpLNQpBoGDyBzW7",    // [PUBLIC in direct mode] sent via ?secret= on the webhook URL
+    webhookSecret: "FjpLNQpBoGDyBzW7",    // sent as X-Webhook-Secret from relay; exposed in site.js when using direct CORS
     extraHeaders: {},                     // [SERVER-ONLY] e.g. { "Authorization": "Bearer …" }
     allowedOrigins: [],                   // [SERVER-ONLY] defaults to site.url
     notifyEmail: "",                      // [SERVER-ONLY] optional: also email each submission (uses PHP mail())

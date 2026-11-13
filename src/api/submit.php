@@ -24,11 +24,22 @@ function respond(int $status, array $body): void {
     exit;
 }
 
-// Same-site requests only.
 $origin = rtrim($_SERVER['HTTP_ORIGIN'] ?? '', '/');
 $host = ($_SERVER['HTTPS'] ?? '') === 'on' ? 'https://' : 'http://';
-$self = $host . ($_SERVER['HTTP_HOST'] ?? '');
-if ($origin !== '' && $origin !== $self && !in_array($origin, $config['allowedOrigins'], true)) {
+$self = rtrim($host . ($_SERVER['HTTP_HOST'] ?? ''), '/');
+$allowed = $config['allowedOrigins'];
+if ($origin && in_array($origin, $allowed, true)) {
+    header('Access-Control-Allow-Origin: ' . $origin);
+    header('Access-Control-Allow-Methods: POST, OPTIONS');
+    header('Access-Control-Allow-Headers: Content-Type');
+    header('Vary: Origin');
+}
+if (($_SERVER['REQUEST_METHOD'] ?? '') === 'OPTIONS') {
+    http_response_code(204);
+    exit;
+}
+
+if ($origin !== '' && $origin !== $self && !in_array($origin, $allowed, true)) {
     respond(403, ['ok' => false, 'error' => 'origin_not_allowed']);
 }
 if (($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST') {

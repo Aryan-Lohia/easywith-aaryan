@@ -521,17 +521,6 @@ ${footer(key, page)}
 }
 
 /* ------------------------------------------------------ public config */
-function directWebhookEndpoint() {
-  if (!forms.webhookUrl) return "";
-  try {
-    const u = new URL(forms.webhookUrl);
-    if (forms.webhookSecret) u.searchParams.set("secret", forms.webhookSecret);
-    return u.toString();
-  } catch (_) {
-    return forms.webhookUrl;
-  }
-}
-
 function runtimeConfig() {
   const pub = {
     siteUrl: siteUrl,
@@ -549,7 +538,8 @@ function runtimeConfig() {
     currency: cfg.currency,
     forms: {
       mode: forms.mode,
-      endpoint: forms.mode === "relay" ? "/api/submit.php" : forms.mode === "direct" ? directWebhookEndpoint() : "",
+      endpoint: forms.mode === "relay" ? "/api/submit.php" : "",
+      browserRelayUrl: forms.browserRelayUrl || "",
       webhookUrl: forms.mode === "direct" ? forms.webhookUrl : "",
       webhookSecret: forms.mode === "direct" ? (forms.webhookSecret || "") : "",
       webhookForms: forms.webhookForms || ["application", "needs-assessment"],
@@ -693,7 +683,11 @@ function checks() {
   if (!contact.instagram) warn("contact.instagram is empty → Instagram button/link hidden");
   if (forms.mode !== "whatsapp" && !forms.webhookUrl) warn(`forms.webhookUrl is empty → form answers will be sent via WhatsApp`);
   if (forms.mode === "relay" && forms.webhookUrl && !forms.webhookSecret) warn("forms.webhookSecret is empty → webhook requests are unsigned");
-  if (forms.mode === "direct" && forms.webhookSecret) warn("forms.mode is \"direct\": webhook secret is in the published site (required for GitHub Pages). Use \"relay\" on PHP hosting to keep it private.");
+  if (forms.mode === "direct" && !forms.browserRelayUrl) {
+    warn("forms.browserRelayUrl is empty → apply form needs CORS on the inbound webhook (JSON + X-Webhook-Secret) or a PHP relay URL");
+  }
+  if (forms.mode === "direct" && forms.webhookSecret && forms.browserRelayUrl) warn("direct + browserRelayUrl: webhook secret stays on the relay server (recommended)");
+  else if (forms.mode === "direct" && forms.webhookSecret) warn("forms.mode is \"direct\": webhook secret is in site.js until you use browserRelayUrl");
   if (!Object.values(tracking).some(v => typeof v === "string" && v)) warn("No tracking tags configured (GA4 / GTM / Meta Pixel / Clarity)");
   if (!cfg.testimonials?.length) warn("No testimonials yet → testimonial sections are hidden");
   for (const [k, p] of Object.entries(pages)) {
