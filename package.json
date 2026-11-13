@@ -1,0 +1,12 @@
+{
+  "name": "easywith-aaryan",
+  "private": true,
+  "scripts": {
+    "build": "node build.mjs",
+    "relay:deploy": "wrangler deploy",
+    "relay:dev": "wrangler dev"
+  },
+  "devDependencies": {
+    "wrangler": "^3.99.0"
+  }
+}

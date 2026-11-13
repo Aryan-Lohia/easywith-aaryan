@@ -520,8 +520,19 @@ ${footer(key, page)}
   return out;
 }
 
+const WORKER_NAME = "easywith-aaryan-forms";
+
+function browserRelayUrlResolved() {
+  const fromEnv = (process.env.FORM_RELAY_URL || "").trim();
+  if (fromEnv) return fromEnv;
+  const sub = (process.env.CLOUDFLARE_WORKERS_SUBDOMAIN || "").trim();
+  if (sub) return `https://${WORKER_NAME}.${sub}.workers.dev`;
+  return (forms.browserRelayUrl || "").trim();
+}
+
 /* ------------------------------------------------------ public config */
 function runtimeConfig() {
+  const browserRelay = browserRelayUrlResolved();
   const pub = {
     siteUrl: siteUrl,
     siteName: site.name,
@@ -539,9 +550,9 @@ function runtimeConfig() {
     forms: {
       mode: forms.mode,
       endpoint: forms.mode === "relay" ? "/api/submit.php" : "",
-      browserRelayUrl: forms.browserRelayUrl || "",
-      webhookUrl: forms.mode === "direct" ? forms.webhookUrl : "",
-      webhookSecret: forms.mode === "direct" ? (forms.webhookSecret || "") : "",
+      browserRelayUrl: browserRelay,
+      webhookUrl: forms.mode === "direct" && !browserRelay ? forms.webhookUrl : "",
+      webhookSecret: forms.mode === "direct" && !browserRelay ? (forms.webhookSecret || "") : "",
       webhookForms: forms.webhookForms || ["application", "needs-assessment"],
     },
     ads: {
@@ -683,11 +694,10 @@ function checks() {
   if (!contact.instagram) warn("contact.instagram is empty → Instagram button/link hidden");
   if (forms.mode !== "whatsapp" && !forms.webhookUrl) warn(`forms.webhookUrl is empty → form answers will be sent via WhatsApp`);
   if (forms.mode === "relay" && forms.webhookUrl && !forms.webhookSecret) warn("forms.webhookSecret is empty → webhook requests are unsigned");
-  if (forms.mode === "direct" && !forms.browserRelayUrl) {
-    warn("forms.browserRelayUrl is empty → apply form needs CORS on the inbound webhook (JSON + X-Webhook-Secret) or a PHP relay URL");
+  const relay = browserRelayUrlResolved();
+  if (forms.mode === "direct" && !relay) {
+    warn("No form relay URL → set CLOUDFLARE_WORKERS_SUBDOMAIN (or FORM_RELAY_URL) in GitHub Actions secrets, or forms.browserRelayUrl");
   }
-  if (forms.mode === "direct" && forms.webhookSecret && forms.browserRelayUrl) warn("direct + browserRelayUrl: webhook secret stays on the relay server (recommended)");
-  else if (forms.mode === "direct" && forms.webhookSecret) warn("forms.mode is \"direct\": webhook secret is in site.js until you use browserRelayUrl");
   if (!Object.values(tracking).some(v => typeof v === "string" && v)) warn("No tracking tags configured (GA4 / GTM / Meta Pixel / Clarity)");
   if (!cfg.testimonials?.length) warn("No testimonials yet → testimonial sections are hidden");
   for (const [k, p] of Object.entries(pages)) {

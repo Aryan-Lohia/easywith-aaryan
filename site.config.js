@@ -111,10 +111,10 @@ module.exports = {
        "whatsapp" → no webhook; answers open as a pre-filled WhatsApp message.
      If delivery fails for any reason, the visitor gets the WhatsApp fallback. */
   forms: {
-    // GitHub Pages cannot call the inbound webhook directly (needs JSON + X-Webhook-Secret header).
-    // Set browserRelayUrl to a CORS-enabled relay (e.g. Hostinger dist/api/submit.php, or a route on backend.theaihive.io).
+    // GitHub Pages → Cloudflare Worker relay (see wrangler.toml + deploy-form-relay.yml).
+    // CI sets relay URL from CLOUDFLARE_WORKERS_SUBDOMAIN or FORM_RELAY_URL. Override here if needed:
     mode: "direct",
-    browserRelayUrl: "",                  // e.g. "https://YOUR-PHP-HOST/api/submit.php"
+    browserRelayUrl: "",                  // e.g. "https://courses.aryanlohia.com/api/submit" with CF route
     webhookUrl: "https://backend.theaihive.io/api/v1/input/inbound-webhook/550cc97d9fb74e859d19f4bd4dfb935242764088dcaf311a5f80a4e335da3acc",
     webhookSecret: "FjpLNQpBoGDyBzW7",    // sent as X-Webhook-Secret from relay; exposed in site.js when using direct CORS
     extraHeaders: {},                     // [SERVER-ONLY] e.g. { "Authorization": "Bearer …" }

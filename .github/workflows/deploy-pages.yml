@@ -28,6 +28,9 @@ jobs:
 
       - name: Build site
         run: node build.mjs
+        env:
+          FORM_RELAY_URL: ${{ secrets.FORM_RELAY_URL }}
+          CLOUDFLARE_WORKERS_SUBDOMAIN: ${{ secrets.CLOUDFLARE_WORKERS_SUBDOMAIN }}
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3

@@ -1,0 +1,26 @@
+# Cloudflare Worker — form relay for courses.aryanlohia.com (GitHub Pages).
+# Deploy: GitHub Actions (deploy-form-relay.yml) or: npx wrangler deploy
+#
+# GitHub repo secrets (Settings → Secrets → Actions):
+#   CLOUDFLARE_API_TOKEN
+#   CLOUDFLARE_ACCOUNT_ID
+#   EASYWITH_WEBHOOK_URL      → same as forms.webhookUrl in site.config.js
+#   EASYWITH_WEBHOOK_SECRET   → same as forms.webhookSecret
+# Optional (auto-wires site build):
+#   CLOUDFLARE_WORKERS_SUBDOMAIN  → e.g. aryan-lohia (from *.workers.dev URL)
+#   FORM_RELAY_URL                → override full relay URL if using a custom route
+#
+# Same-origin route (optional): if courses.aryanlohia.com is proxied in Cloudflare,
+# uncomment routes and set FORM_RELAY_URL=https://courses.aryanlohia.com/api/submit
+
+name = "easywith-aaryan-forms"
+main = "relay/worker.mjs"
+compatibility_date = "2024-11-01"
+
+[vars]
+ALLOWED_ORIGIN = "https://courses.aryanlohia.com"
+SITE_URL = "https://courses.aryanlohia.com"
+
+# routes = [
+#   { pattern = "courses.aryanlohia.com/api/submit", zone_name = "aryanlohia.com" }
+# ]

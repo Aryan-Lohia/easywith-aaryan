@@ -1,0 +1,60 @@
+name: Deploy form relay (Cloudflare)
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: form-relay
+  cancel-in-progress: false
+
+jobs:
+  deploy-worker:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Cloudflare relay enabled?
+        id: cf
+        env:
+          CF_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CF_ACCOUNT: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          if [ -n "$CF_TOKEN" ] && [ -n "$CF_ACCOUNT" ]; then
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+            echo "Skip worker deploy: add CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID in repo secrets."
+          fi
+
+      - name: Setup Node
+        if: steps.cf.outputs.enabled == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - name: Install Wrangler
+        if: steps.cf.outputs.enabled == 'true'
+        run: npm ci
+
+      - name: Push worker secrets
+        if: steps.cf.outputs.enabled == 'true'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          WEBHOOK_URL: ${{ secrets.EASYWITH_WEBHOOK_URL }}
+          WEBHOOK_SECRET: ${{ secrets.EASYWITH_WEBHOOK_SECRET }}
+        run: |
+          printf '%s' "$WEBHOOK_URL" | npx wrangler secret put WEBHOOK_URL
+          printf '%s' "$WEBHOOK_SECRET" | npx wrangler secret put WEBHOOK_SECRET
+
+      - name: Deploy Worker
+        if: steps.cf.outputs.enabled == 'true'
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy

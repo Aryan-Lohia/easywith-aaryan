@@ -39,7 +39,19 @@ gh api /repos/Aryan-Lohia/easywith-aaryan/pages/health --jq '.domain | {is_valid
 
 When `is_https_eligible` is `true`, turn on **Enforce HTTPS** in Pages settings (or `gh api -X PUT ... -F https_enforced=true`).
 
-**Note:** GitHub Pages is static only — `forms.mode: "relay"` (PHP) does not run here. Use `forms.mode: "direct"` or `"whatsapp"` in `site.config.js`, or keep form relay on PHP hosting elsewhere.
+**GitHub Pages + apply webhook:** Pages cannot POST to the theaihive inbound URL from the browser (needs JSON + `X-Webhook-Secret`). This repo ships a **Cloudflare Worker** relay (`relay/worker.mjs`, `wrangler.toml`). On each push, `deploy-form-relay.yml` deploys it when these **GitHub → Settings → Secrets → Actions** are set:
+
+| Secret | Value |
+|--------|--------|
+| `CLOUDFLARE_API_TOKEN` | Cloudflare API token with Workers edit |
+| `CLOUDFLARE_ACCOUNT_ID` | Your Cloudflare account ID |
+| `EASYWITH_WEBHOOK_URL` | Same as `forms.webhookUrl` in `site.config.js` |
+| `EASYWITH_WEBHOOK_SECRET` | Same as `forms.webhookSecret` in `site.config.js` |
+| `CLOUDFLARE_WORKERS_SUBDOMAIN` | Subdomain from `*.workers.dev` (e.g. `aryan-lohia`) |
+
+Optional: `FORM_RELAY_URL` — full relay URL (e.g. `https://courses.aryanlohia.com/api/submit` if you add the `routes` block in `wrangler.toml`). The Pages build embeds the relay URL into `site.js` automatically.
+
+Without the relay, short forms still open WhatsApp; apply/needs-assessment show a WhatsApp fallback until the worker is deployed.
 
 ## Folder map
 
